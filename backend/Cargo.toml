@@ -1,0 +1,22 @@
+[package]
+name = "dasharr"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+actix-web = "4"
+utoipa = { version = "5.3.1", features = ["actix_extras"] }
+utoipa-swagger-ui = { version = "9.0.1", features = ["actix-web", "debug-embed"] }
+utoipa-actix-web = "0.1.2"
+tokio = { version = "1", features = ["full"] }
+envconfig = "0.11.0"
+actix-web-httpauth = "0.8.2"
+thiserror = "2.0.12"
+dotenvy = "0.15.7"
+actix-cors = "0.7.1"
+sqlx = { version = "0.8", features = [ "runtime-tokio", "tls-native-tls", "postgres", "chrono" ] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = {version = "1.0", features = ["preserve_order"]}
+chrono = { version = "0.4", features = ["serde"] }
+log = "0.4"
+futures = "0.3"
