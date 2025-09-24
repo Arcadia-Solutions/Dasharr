@@ -9,7 +9,7 @@ use actix_web::{
 };
 
 #[utoipa::path(
-    get,
+    post,
     operation_id = "Add indexer",
     tag = "Indexers",
     path = "/api/indexers",

@@ -1,8 +1,10 @@
 use actix_cors::Cors;
 use actix_web::{App, HttpServer, middleware, web::Data};
-use dasharr::{Dasharr, connection_pool::ConnectionPool, env::Env, routes::init};
+use dasharr::{Dasharr, api_doc::ApiDoc, connection_pool::ConnectionPool, env::Env, routes::init};
 use envconfig::Envconfig;
 use std::{env, sync::Arc};
+use utoipa::OpenApi;
+use utoipa_swagger_ui::SwaggerUi;
 // use utoipa::OpenApi;
 // use utoipa_swagger_ui::SwaggerUi;
 
@@ -30,10 +32,10 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .app_data(arc.clone())
             .configure(init) // Initialize routes
-        // .service(
-        //     SwaggerUi::new("/swagger-ui/{_:.*}")
-        //         .url("/swagger-json/openapi.json", ApiDoc::openapi()),
-        // )
+            .service(
+                SwaggerUi::new("/swagger-ui/{_:.*}")
+                    .url("/swagger-json/openapi.json", ApiDoc::openapi()),
+            )
     })
     .bind(server_url)?
     .run();

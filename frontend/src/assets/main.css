@@ -1,0 +1,13 @@
+@import './base.css';
+@import 'primeicons/primeicons.css';
+
+#app {
+  background-color: #2d2d2d;
+  color: white;
+  min-height: 100vh;
+}
+
+.p-tabs {
+  border-radius: 10px;
+  overflow: hidden;
+}

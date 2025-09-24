@@ -2,6 +2,7 @@ use std::{ops::Deref, sync::Arc};
 
 use crate::{connection_pool::ConnectionPool, env::Env};
 
+pub mod api_doc;
 pub mod connection_pool;
 pub mod env;
 pub mod error;
