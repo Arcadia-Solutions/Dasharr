@@ -1,6 +1,6 @@
 CREATE TABLE indexers (
     id SERIAL PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
-    api_key TEXT,
+    auth_data JSONB NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 )

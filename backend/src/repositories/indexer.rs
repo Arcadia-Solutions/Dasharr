@@ -10,12 +10,12 @@ impl ConnectionPool {
         let created_indexer = sqlx::query_as!(
             Indexer,
             r#"
-                INSERT INTO indexers (name, api_key)
+                INSERT INTO indexers (name, auth_data)
                 VALUES ($1, $2)
                 RETURNING *
             "#,
             new_indexer.name,
-            new_indexer.api_key
+            new_indexer.auth_data
         )
         .fetch_one(self.borrow())
         .await
