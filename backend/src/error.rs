@@ -2,6 +2,8 @@
 pub enum Error {
     #[error("could not create indexer")]
     CouldNotCreateIndexer(#[source] sqlx::Error),
+    #[error("could not get indexers")]
+    CouldNotGetIndexers(#[source] sqlx::Error),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

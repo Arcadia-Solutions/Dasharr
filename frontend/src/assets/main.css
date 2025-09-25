@@ -11,3 +11,9 @@
   border-radius: 10px;
   overflow: hidden;
 }
+
+.wrapper-center {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}

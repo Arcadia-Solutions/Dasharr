@@ -3,10 +3,14 @@ import api from './api.ts'
 
 export type Indexer = components['schemas']['Indexer']
 
-export type NewIndexer = components['schemas']['NewIndexer']
+export type UpdatedIndexer = components['schemas']['UpdatedIndexer']
 
 export type AuthItem = components['schemas']['AuthItem']
 
-export const addIndexer = async (indexer: NewIndexer): Promise<Indexer> => {
-  return (await api.post<Indexer>('/indexers', indexer)).data
+export const editIndexer = async (indexer: UpdatedIndexer): Promise<Indexer> => {
+  return (await api.put<Indexer>('/indexers', indexer)).data
+}
+
+export const getIndexers = async (): Promise<Indexer[]> => {
+  return (await api.get<Indexer[]>('/indexers')).data
 }

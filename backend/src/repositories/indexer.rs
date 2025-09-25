@@ -1,26 +1,41 @@
 use crate::{
     connection_pool::ConnectionPool,
     error::{Error, Result},
-    models::indexer::{Indexer, NewIndexer},
+    models::indexer::{Indexer, UpdatedIndexer},
 };
 use std::borrow::Borrow;
 
 impl ConnectionPool {
-    pub async fn create_indexer(&self, new_indexer: &NewIndexer) -> Result<Indexer> {
-        let created_indexer = sqlx::query_as!(
+    pub async fn update_indexer(&self, indexer: &UpdatedIndexer) -> Result<Indexer> {
+        let updated_indexer = sqlx::query_as!(
             Indexer,
             r#"
-                INSERT INTO indexers (name, auth_data)
-                VALUES ($1, $2)
+                UPDATE indexers
+                SET auth_data = $2
+                WHERE id = $1
                 RETURNING *
             "#,
-            new_indexer.name,
-            new_indexer.auth_data
+            indexer.id,
+            indexer.auth_data
         )
         .fetch_one(self.borrow())
         .await
         .map_err(Error::CouldNotCreateIndexer)?;
 
-        Ok(created_indexer)
+        Ok(updated_indexer)
+    }
+
+    pub async fn find_indexers(&self) -> Result<Vec<Indexer>> {
+        let indexers = sqlx::query_as!(
+            Indexer,
+            r#"
+                SELECT * FROM indexers
+            "#
+        )
+        .fetch_all(self.borrow())
+        .await
+        .map_err(Error::CouldNotGetIndexers)?;
+
+        Ok(indexers)
     }
 }

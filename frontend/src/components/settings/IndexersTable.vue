@@ -1,5 +1,5 @@
 <template>
-  <DataTable :value="getConfigurableIndexers()">
+  <DataTable :value="indexers">
     <Column field="name" header="Name" />
     <Column>
       <template #body="slotProps">
@@ -18,16 +18,16 @@
 <script lang="ts" setup>
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
-import { getConfigurableIndexers } from '@/services/helpers'
 import { Button, Dialog } from 'primevue'
-import type { NewIndexer } from '@/services/api/indexerService'
-import { ref } from 'vue'
+import { getIndexers, type Indexer, type UpdatedIndexer } from '@/services/api/indexerService'
+import { onMounted, ref } from 'vue'
 import IndexerSettings from './IndexerSettings.vue'
 
-const indexerBeingEdited = ref<NewIndexer | null>(null)
+const indexers = ref<Indexer[]>([])
+const indexerBeingEdited = ref<UpdatedIndexer | null>(null)
 const indexerSettingsDialogVisible = ref(false)
 
-const editIndexer = (indexer: NewIndexer) => {
+const editIndexer = (indexer: UpdatedIndexer) => {
   indexerBeingEdited.value = indexer
   indexerSettingsDialogVisible.value = true
 }
@@ -35,4 +35,7 @@ const indexerCreated = () => {
   indexerBeingEdited.value = null
   indexerSettingsDialogVisible.value = false
 }
+onMounted(() => {
+  getIndexers().then((i) => (indexers.value = i))
+})
 </script>

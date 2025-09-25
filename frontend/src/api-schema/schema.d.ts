@@ -11,8 +11,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["Add indexer"];
-        put?: never;
+        get: operations["Get indexers"];
+        put: operations["Add indexer"];
         post?: never;
         delete?: never;
         options?: never;
@@ -36,11 +36,12 @@ export interface components {
             id: number;
             name: string;
         };
-        NewIndexer: {
+        UpdatedIndexer: {
             auth_data: {
                 [key: string]: components["schemas"]["AuthItem"];
             };
-            name: string;
+            /** Format: int32 */
+            id: number;
         };
     };
     responses: never;
@@ -51,6 +52,26 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    "Get indexers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully added the indexer */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Indexer"][];
+                };
+            };
+        };
+    };
     "Add indexer": {
         parameters: {
             query?: never;
@@ -60,7 +81,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["NewIndexer"];
+                "application/json": components["schemas"]["UpdatedIndexer"];
             };
         };
         responses: {
