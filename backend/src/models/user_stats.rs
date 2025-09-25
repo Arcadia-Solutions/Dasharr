@@ -1,10 +1,13 @@
+use chrono::{DateTime, Local};
 use serde::Deserialize;
 use sqlx::prelude::FromRow;
+use utoipa::ToSchema;
 
-#[derive(Debug, Default, Deserialize, FromRow)]
-pub struct UserProfile {
+#[derive(Debug, Default, Deserialize, FromRow, ToSchema)]
+pub struct UserProfileScraped {
     pub avatar: String,
-    pub last_access: String,
+    // #[schema(value_type = String, format = DateTime)]
+    // pub last_access: NaiveDateTime,
     pub uploaded: u64,
     pub downloaded: u64,
     pub ratio: f32,
@@ -34,4 +37,14 @@ pub struct UserProfile {
     pub leeching: Option<u32>,
     pub snatched: Option<u32>,
     pub invited: Option<u32>,
+}
+
+#[derive(Debug, Default, Deserialize, FromRow, ToSchema)]
+pub struct UserProfile {
+    #[sqlx(flatten)]
+    #[serde(flatten)]
+    pub base: UserProfileScraped,
+    #[schema(value_type = String, format = DateTime)]
+    pub scraped_at: DateTime<Local>,
+    pub indexer_id: i32,
 }

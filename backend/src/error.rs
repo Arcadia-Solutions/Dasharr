@@ -4,6 +4,8 @@ pub enum Error {
     CouldNotCreateIndexer(#[source] sqlx::Error),
     #[error("could not get indexers")]
     CouldNotGetIndexers(#[source] sqlx::Error),
+    #[error("could not insert stats: {0}")]
+    CouldNotInsertStats(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

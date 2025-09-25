@@ -3,20 +3,20 @@ use serde::Deserialize;
 
 use crate::models::{
     indexer::{Indexer, Scraper},
-    user_stats::UserProfile,
+    user_stats::UserProfileScraped,
 };
 
 pub struct RedactedScraper;
 
 #[derive(Debug, Deserialize)]
 struct RedactedResponse {
-    response: UserProfileContent,
+    response: UserProfileScrapedContent,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct JsonStats {
-    last_access: String,
+    // last_access: NaiveDateTime,
     uploaded: u64,
     downloaded: u64,
     ratio: f32,
@@ -68,7 +68,7 @@ struct JsonCommunity {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct UserProfileContent {
+struct UserProfileScrapedContent {
     avatar: String,
     stats: JsonStats,
     ranks: JsonRanks,
@@ -76,11 +76,11 @@ struct UserProfileContent {
     community: JsonCommunity,
 }
 
-impl From<UserProfileContent> for UserProfile {
-    fn from(wrapper: UserProfileContent) -> Self {
-        UserProfile {
+impl From<UserProfileScrapedContent> for UserProfileScraped {
+    fn from(wrapper: UserProfileScrapedContent) -> Self {
+        UserProfileScraped {
             avatar: wrapper.avatar,
-            last_access: wrapper.stats.last_access,
+            // last_access: wrapper.stats.last_access,
             uploaded: wrapper.stats.uploaded,
             downloaded: wrapper.stats.downloaded,
             ratio: wrapper.stats.ratio,
@@ -116,7 +116,10 @@ impl From<UserProfileContent> for UserProfile {
 
 #[async_trait]
 impl Scraper for RedactedScraper {
-    async fn scrape(&self, indexer: Indexer) -> Result<(), Box<dyn std::error::Error>> {
+    async fn scrape(
+        &self,
+        indexer: Indexer,
+    ) -> Result<UserProfileScraped, Box<dyn std::error::Error>> {
         let client = reqwest::Client::new();
         let res = client
             .get(format!(
@@ -145,11 +148,10 @@ impl Scraper for RedactedScraper {
             .await?;
 
         let body = res.text().await?;
-        let profile: UserProfile = serde_json::from_str::<RedactedResponse>(&body)?
+        let profile: UserProfileScraped = serde_json::from_str::<RedactedResponse>(&body)?
             .response
             .into();
-        println!("{:?}", profile);
 
-        Ok(())
+        Ok(profile)
     }
 }

@@ -1,18 +1,30 @@
 use actix_web::web::Data;
+use chrono::Local;
 use futures::StreamExt;
 
-use crate::{Dasharr, error::Result};
+use crate::{Dasharr, error::Result, models::user_stats::UserProfile};
 
 pub async fn scrape_indexers(arc: &Data<Dasharr>) -> Result<()> {
     let indexers = arc.pool.find_indexers().await?;
 
-    futures::stream::iter(indexers.iter())
-        .for_each_concurrent(None, |indexer| async {
-            if let Err(e) = indexer.clone().scrape().await {
-                eprintln!("Error scraping {}: {}", indexer.name, e);
+    let profiles = futures::stream::iter(indexers.iter())
+        .filter_map(|indexer| async move {
+            match indexer.clone().scrape().await {
+                Ok(profile) => Some(UserProfile {
+                    base: profile,
+                    scraped_at: Local::now(),
+                    indexer_id: indexer.id,
+                }),
+                Err(e) => {
+                    eprintln!("Error scraping {}: {}", indexer.name, e);
+                    None
+                }
             }
         })
+        .collect::<Vec<_>>()
         .await;
+
+    arc.pool.create_stats(&profiles).await?;
 
     Ok(())
 }

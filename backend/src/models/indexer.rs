@@ -3,7 +3,9 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use utoipa::ToSchema;
 
-use crate::services::user_stats::redacted::RedactedScraper;
+use crate::{
+    models::user_stats::UserProfileScraped, services::user_stats::redacted::RedactedScraper,
+};
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct AuthItem {
@@ -28,7 +30,10 @@ pub struct UpdatedIndexer {
 
 #[async_trait]
 pub trait Scraper {
-    async fn scrape(&self, indexer: Indexer) -> Result<(), Box<dyn std::error::Error>>;
+    async fn scrape(
+        &self,
+        indexer: Indexer,
+    ) -> Result<UserProfileScraped, Box<dyn std::error::Error>>;
 }
 
 #[derive(Debug)]
@@ -49,7 +54,7 @@ impl std::fmt::Display for ScraperError {
 impl std::error::Error for ScraperError {}
 
 impl Indexer {
-    pub async fn scrape(self) -> Result<(), Box<dyn std::error::Error>> {
+    pub async fn scrape(self) -> Result<UserProfileScraped, Box<dyn std::error::Error>> {
         let scraper_ref: &dyn Scraper = match self.name.as_str() {
             "Redacted" => {
                 static REDACTED_SCRAPER: RedactedScraper = RedactedScraper;
@@ -60,7 +65,7 @@ impl Indexer {
             }
         };
 
-        scraper_ref.scrape(self).await?;
-        Ok(())
+        let profile = scraper_ref.scrape(self).await?;
+        Ok(profile)
     }
 }
