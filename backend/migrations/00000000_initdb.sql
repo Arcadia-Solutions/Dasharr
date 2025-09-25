@@ -11,10 +11,9 @@ INSERT INTO indexers (name, auth_data) VALUES
 ('Orpheus', '{"api_key": {"value": "", "explanation": "Get it from your profile''s settings, in \"Access Settings\""}}');
 
 CREATE TABLE user_profiles (
-    id BIGSERIAL PRIMARY KEY,
     scraped_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     indexer_id INT NOT NULL REFERENCES indexers(id),
-    avatar VARCHAR(255) NOT NULL,
+    avatar TEXT NOT NULL,
     -- last_access TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     uploaded BIGINT NOT NULL,
     downloaded BIGINT NOT NULL,

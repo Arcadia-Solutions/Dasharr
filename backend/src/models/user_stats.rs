@@ -1,9 +1,11 @@
 use chrono::{DateTime, Local};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
+use soa_derive::StructOfArray;
 use sqlx::prelude::FromRow;
 use utoipa::ToSchema;
 
-#[derive(Debug, Default, Deserialize, FromRow, ToSchema)]
+#[derive(Debug, Default, Deserialize, Serialize, FromRow, StructOfArray, ToSchema)]
+#[soa_attr(Vec, derive(Deserialize, Serialize, ToSchema))]
 pub struct UserProfileScraped {
     pub avatar: String,
     // #[schema(value_type = String, format = DateTime)]
@@ -39,12 +41,20 @@ pub struct UserProfileScraped {
     pub invited: Option<i32>,
 }
 
-#[derive(Debug, Default, Deserialize, FromRow, ToSchema)]
+#[derive(Debug, Default, Deserialize, Serialize, FromRow, StructOfArray, ToSchema)]
+#[soa_attr(Vec, derive(Deserialize, Serialize, ToSchema))]
 pub struct UserProfile {
     #[sqlx(flatten)]
     #[serde(flatten)]
-    pub base: UserProfileScraped,
+    #[nested_soa]
+    pub profile: UserProfileScraped,
     #[schema(value_type = String, format = DateTime)]
     pub scraped_at: DateTime<Local>,
     pub indexer_id: i32,
+}
+
+impl UserProfileVec {
+    pub fn from_vec(profiles: Vec<UserProfile>) -> Self {
+        profiles.into_iter().collect()
+    }
 }

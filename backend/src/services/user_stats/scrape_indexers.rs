@@ -13,7 +13,7 @@ pub async fn scrape_indexers(arc: &Data<Dasharr>) -> Result<()> {
                 log::info!("scraping indexer: {}", indexer.name);
                 match indexer.clone().scrape().await {
                     Ok(profile) => Some(UserProfile {
-                        base: profile,
+                        profile,
                         scraped_at: Local::now(),
                         indexer_id: indexer.id,
                     }),

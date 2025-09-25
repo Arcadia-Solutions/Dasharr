@@ -21,15 +21,15 @@ impl ConnectionPool {
                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                     "#,
                 profile.indexer_id,
-                profile.base.avatar,
-                // profile.base.last_access,
-                profile.base.uploaded,
-                profile.base.downloaded,
-                profile.base.ratio,
-                profile.base.required_ratio,
-                profile.base.class,
-                profile.base.rank_uploaded,
-                profile.base.donor,
+                profile.profile.avatar,
+                // profile.profile.last_access,
+                profile.profile.uploaded,
+                profile.profile.downloaded,
+                profile.profile.ratio,
+                profile.profile.required_ratio,
+                profile.profile.class,
+                profile.profile.rank_uploaded,
+                profile.profile.donor,
             )
             // .execute(&mut *tx)
             .execute(self.borrow())
@@ -40,5 +40,23 @@ impl ConnectionPool {
         // tx.commit().await?;
 
         Ok(())
+    }
+
+    pub async fn find_user_stats(&self, indexer_id: i64) -> Result<Vec<UserProfile>> {
+        // currently not possible to use a macro
+        // https://github.com/launchbadge/sqlx/issues/514
+        // query_as_unchecked also tries to check the result of the query...
+        let indexers: Vec<UserProfile> = sqlx::query_as(
+            r#"
+            SELECT * FROM user_profiles
+            WHERE indexer_id = $1
+            "#,
+        )
+        .bind(indexer_id)
+        .fetch_all(self.borrow())
+        .await
+        .map_err(Error::CouldNotGetIndexers)?;
+
+        Ok(indexers)
     }
 }
