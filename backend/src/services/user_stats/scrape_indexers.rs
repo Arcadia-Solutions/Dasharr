@@ -9,16 +9,20 @@ pub async fn scrape_indexers(arc: &Data<Dasharr>) -> Result<()> {
 
     let profiles = futures::stream::iter(indexers.iter())
         .filter_map(|indexer| async move {
-            match indexer.clone().scrape().await {
-                Ok(profile) => Some(UserProfile {
-                    base: profile,
-                    scraped_at: Local::now(),
-                    indexer_id: indexer.id,
-                }),
-                Err(e) => {
-                    eprintln!("Error scraping {}: {}", indexer.name, e);
-                    None
+            if indexer.enabled {
+                match indexer.clone().scrape().await {
+                    Ok(profile) => Some(UserProfile {
+                        base: profile,
+                        scraped_at: Local::now(),
+                        indexer_id: indexer.id,
+                    }),
+                    Err(e) => {
+                        eprintln!("Error scraping {}: {}", indexer.name, e);
+                        None
+                    }
                 }
+            } else {
+                None
             }
         })
         .collect::<Vec<_>>()

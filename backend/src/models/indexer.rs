@@ -4,7 +4,8 @@ use serde_json::Value;
 use utoipa::ToSchema;
 
 use crate::{
-    models::user_stats::UserProfileScraped, services::user_stats::redacted::RedactedScraper,
+    models::user_stats::UserProfileScraped,
+    services::user_stats::{gazelle_games::GazelleGamesScraper, redacted::RedactedScraper},
 };
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
@@ -16,6 +17,7 @@ pub struct AuthItem {
 #[derive(Debug, Serialize, Deserialize, ToSchema, Clone)]
 pub struct Indexer {
     pub id: i32,
+    pub enabled: bool,
     pub name: String,
     #[schema(value_type = HashMap<String, AuthItem>)]
     pub auth_data: Value,
@@ -59,6 +61,10 @@ impl Indexer {
             "Redacted" => {
                 static REDACTED_SCRAPER: RedactedScraper = RedactedScraper;
                 &REDACTED_SCRAPER
+            }
+            "GazelleGames" => {
+                static GAZELLE_GAMES_SCRAPER: GazelleGamesScraper = GazelleGamesScraper;
+                &GAZELLE_GAMES_SCRAPER
             }
             _ => {
                 return Err(Box::new(ScraperError::ScraperNotFound(self.name.clone())));

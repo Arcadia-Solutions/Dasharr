@@ -6,10 +6,10 @@ use crate::models::{
     user_stats::UserProfileScraped,
 };
 
-pub struct RedactedScraper;
+pub struct GazelleGamesScraper;
 
 #[derive(Debug, Deserialize)]
-struct RedactedResponse {
+struct GazelleGamesResponse {
     response: UserProfileScrapedContent,
 }
 
@@ -19,23 +19,8 @@ struct JsonStats {
     // last_access: NaiveDateTime,
     uploaded: i64,
     downloaded: i64,
-    ratio: f32,
-    required_ratio: f32,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct JsonRanks {
-    #[serde(rename = "uploaded")]
-    rank_uploaded: i32,
-    #[serde(rename = "downloaded")]
-    rank_downloaded: i32,
-    uploads: i32,
-    requests: i32,
-    bounty: i32,
-    posts: i32,
-    artists: i32,
-    overall: i32,
+    ratio: String,
+    required_ratio: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -53,17 +38,17 @@ struct JsonPersonal {
 struct JsonCommunity {
     posts: i32,
     torrent_comments: i32,
-    collages_started: i32,
-    collages_contrib: i32,
-    requests_filled: i32,
-    requests_voted: i32,
+    collections: i32,
+    // collages_contrib: None,
+    requests_filled: Option<i32>,
+    requests_voted: Option<i32>,
     #[serde(rename = "uploaded")]
-    uploaded_torrents: i32,
-    groups: i32,
-    seeding: i32,
-    leeching: i32,
-    snatched: i32,
-    invited: i32,
+    uploaded_torrents: Option<i32>,
+    groups: Option<i32>,
+    seeding: Option<i32>,
+    leeching: Option<i32>,
+    snatched: Option<i32>,
+    invited: Option<i32>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -71,7 +56,6 @@ struct JsonCommunity {
 struct UserProfileScrapedContent {
     avatar: String,
     stats: JsonStats,
-    ranks: JsonRanks,
     personal: JsonPersonal,
     community: JsonCommunity,
 }
@@ -83,16 +67,15 @@ impl From<UserProfileScrapedContent> for UserProfileScraped {
             // last_access: wrapper.stats.last_access,
             uploaded: wrapper.stats.uploaded,
             downloaded: wrapper.stats.downloaded,
-            ratio: wrapper.stats.ratio,
-            required_ratio: Some(wrapper.stats.required_ratio),
-            rank_uploaded: Some(wrapper.ranks.rank_uploaded),
-            rank_downloaded: Some(wrapper.ranks.rank_downloaded),
-            rank_uploads: Some(wrapper.ranks.uploads),
-            rank_requests: Some(wrapper.ranks.requests),
-            rank_bounty: Some(wrapper.ranks.bounty),
-            rank_posts: Some(wrapper.ranks.posts),
-            rank_artists: Some(wrapper.ranks.artists),
-            rank_overall: Some(wrapper.ranks.overall),
+            ratio: wrapper.stats.ratio.parse().unwrap_or(0.0),
+            required_ratio: Some(
+                wrapper
+                    .stats
+                    .required_ratio
+                    .unwrap_or("0.0".to_string())
+                    .parse()
+                    .unwrap_or(0.0),
+            ),
             class: wrapper.personal.class,
             // paranoia: Some(wrapper.personal.paranoia),
             paranoia_text: Some(wrapper.personal.paranoia_text),
@@ -100,22 +83,22 @@ impl From<UserProfileScrapedContent> for UserProfileScraped {
             warned: Some(wrapper.personal.warned),
             posts: Some(wrapper.community.posts),
             torrent_comments: Some(wrapper.community.torrent_comments),
-            collages_started: Some(wrapper.community.collages_started),
-            collages_contrib: Some(wrapper.community.collages_contrib),
-            requests_filled: Some(wrapper.community.requests_filled),
-            requests_voted: Some(wrapper.community.requests_voted),
-            uploaded_torrents: Some(wrapper.community.uploaded_torrents),
-            groups: Some(wrapper.community.groups),
-            seeding: Some(wrapper.community.seeding),
-            leeching: Some(wrapper.community.leeching),
-            snatched: Some(wrapper.community.snatched),
-            invited: Some(wrapper.community.invited),
+            collages_started: Some(wrapper.community.collections),
+            requests_filled: Some(wrapper.community.requests_filled.unwrap_or(0)),
+            requests_voted: Some(wrapper.community.requests_voted.unwrap_or(0)),
+            uploaded_torrents: Some(wrapper.community.uploaded_torrents.unwrap_or(0)),
+            groups: Some(wrapper.community.groups.unwrap_or(0)),
+            seeding: Some(wrapper.community.seeding.unwrap_or(0)),
+            leeching: Some(wrapper.community.leeching.unwrap_or(0)),
+            snatched: Some(wrapper.community.snatched.unwrap_or(0)),
+            invited: Some(wrapper.community.invited.unwrap_or(0)),
+            ..Default::default()
         }
     }
 }
 
 #[async_trait]
-impl Scraper for RedactedScraper {
+impl Scraper for GazelleGamesScraper {
     async fn scrape(
         &self,
         indexer: Indexer,
@@ -123,24 +106,24 @@ impl Scraper for RedactedScraper {
         let client = reqwest::Client::new();
         let res = client
             .get(format!(
-                "https://redacted.sh/ajax.php?action=user&id={}",
+                "https://gazellegames.net/api.php?request=user&id={}",
                 indexer
                     .auth_data
                     .get("user_id")
-                    .ok_or("redacted user_id not found")?
+                    .ok_or("ggn user_id not found")?
                     .get("value")
-                    .ok_or("redacted user_id value not found")?
+                    .ok_or("ggn user_id value not found")?
                     .as_str()
                     .unwrap()
             ))
             .header(
-                "Authorization",
+                "X-API-Key",
                 indexer
                     .auth_data
                     .get("api_key")
-                    .ok_or("redacted API key not found")?
+                    .ok_or("ggn API key not found")?
                     .get("value")
-                    .ok_or("redacted API key value not found")?
+                    .ok_or("ggn API key value not found")?
                     .as_str()
                     .unwrap(),
             )
@@ -148,7 +131,7 @@ impl Scraper for RedactedScraper {
             .await?;
 
         let body = res.text().await?;
-        let profile: UserProfileScraped = serde_json::from_str::<RedactedResponse>(&body)?
+        let profile: UserProfileScraped = serde_json::from_str::<GazelleGamesResponse>(&body)?
             .response
             .into();
 

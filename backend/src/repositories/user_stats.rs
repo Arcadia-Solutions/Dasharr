@@ -16,20 +16,19 @@ impl ConnectionPool {
                 r#"
                     INSERT INTO user_profiles (
                         indexer_id, avatar, uploaded, downloaded, ratio, required_ratio,
-                        class, rank_uploaded, paranoia, donor
+                        class, rank_uploaded, donor
                     )
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                     "#,
                 profile.indexer_id,
                 profile.base.avatar,
                 // profile.base.last_access,
-                profile.base.uploaded as i64,
-                profile.base.downloaded as i64,
+                profile.base.uploaded,
+                profile.base.downloaded,
                 profile.base.ratio,
                 profile.base.required_ratio,
                 profile.base.class,
-                profile.base.rank_uploaded.map(|v| v as i32),
-                profile.base.paranoia.map(|v| v as i32),
+                profile.base.rank_uploaded,
                 profile.base.donor,
             )
             // .execute(&mut *tx)
