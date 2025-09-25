@@ -20,6 +20,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/user-stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Get user stats"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/user-stats/scrape": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Scrape user stats"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -27,6 +59,14 @@ export interface components {
         AuthItem: {
             explanation: string;
             value: string;
+        };
+        GetUserStatsQuery: {
+            /** Format: date-time */
+            date_from: string;
+            /** Format: date-time */
+            date_to: string;
+            /** Format: int64 */
+            indexer_id: number;
         };
         Indexer: {
             auth_data: {
@@ -43,6 +83,144 @@ export interface components {
             };
             /** Format: int32 */
             id: number;
+        };
+        /** @description  An analog to `
+         *     Vec<UserProfileScraped>
+         *      ` with Struct of Array (SoA) layout */
+        UserProfileScrapedVec: {
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            avatar: string[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            class: string[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            collages_contrib: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            collages_started: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            donor: (boolean | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            downloaded: number[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            groups: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            invited: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            leeching: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            paranoia_text: (string | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            posts: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            rank_artists: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            rank_bounty: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            rank_downloaded: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            rank_overall: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            rank_posts: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            rank_requests: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            rank_uploaded: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            rank_uploads: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            ratio: number[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            requests_filled: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            requests_voted: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            required_ratio: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            seeding: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            snatched: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            torrent_comments: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            uploaded: number[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            uploaded_torrents: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            warned: (boolean | null)[];
+        };
+        /** @description  An analog to `
+         *     Vec<UserProfile>
+         *      ` with Struct of Array (SoA) layout */
+        UserProfileVec: {
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfile`](struct.UserProfile.html) */
+            indexer_id: number[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfile`](struct.UserProfile.html) */
+            profile: components["schemas"]["UserProfileScrapedVec"];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfile`](struct.UserProfile.html) */
+            scraped_at: string[];
         };
     };
     responses: never;
@@ -94,6 +272,48 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Indexer"];
                 };
+            };
+        };
+    };
+    "Get user stats": {
+        parameters: {
+            query: {
+                indexer_id: number;
+                date_from: string;
+                date_to: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully got user stats */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfileVec"];
+                };
+            };
+        };
+    };
+    "Scrape user stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully scraped user stats */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

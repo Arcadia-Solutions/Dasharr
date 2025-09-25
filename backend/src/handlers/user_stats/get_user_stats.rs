@@ -3,12 +3,17 @@ use actix_web::{
     HttpResponse,
     web::{Data, Query},
 };
+use chrono::NaiveDateTime;
 use serde::Deserialize;
-use utoipa::IntoParams;
+use utoipa::{IntoParams, ToSchema};
 
-#[derive(Debug, Deserialize, IntoParams)]
-pub struct GetUserStatsQueryId {
+#[derive(Debug, Deserialize, IntoParams, ToSchema)]
+pub struct GetUserStatsQuery {
     pub indexer_id: i64,
+    #[param(value_type = String, format = DateTime)]
+    pub date_from: NaiveDateTime,
+    #[param(value_type = String, format = DateTime)]
+    pub date_to: NaiveDateTime,
 }
 
 #[utoipa::path(
@@ -16,12 +21,12 @@ pub struct GetUserStatsQueryId {
     operation_id = "Get user stats",
     tag = "User stats",
     path = "/api/user-stats",
-    params(GetUserStatsQueryId),
+    params(GetUserStatsQuery),
     responses(
         (status = 200, description = "Successfully got user stats", body=UserProfileVec),
     )
 )]
-pub async fn exec(arc: Data<Dasharr>, query: Query<GetUserStatsQueryId>) -> Result<HttpResponse> {
+pub async fn exec(arc: Data<Dasharr>, query: Query<GetUserStatsQuery>) -> Result<HttpResponse> {
     let user_stats = arc.pool.find_user_stats(query.indexer_id).await?;
     // let test: UserProfileVec = user_stats.into();
     let user_stats_reduced = UserProfileVec::from_vec(user_stats);

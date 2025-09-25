@@ -1,5 +1,7 @@
 use utoipa::OpenApi;
 
+use crate::handlers::user_stats::get_user_stats::GetUserStatsQuery;
+
 #[derive(OpenApi)]
 #[openapi(
     info(title = "arcadia-backend API",),
@@ -9,6 +11,6 @@ use utoipa::OpenApi;
         crate::handlers::user_stats::scrape_user_stats::exec,
         crate::handlers::user_stats::get_user_stats::exec,
     ),
-    components(schemas(),)
+    components(schemas(GetUserStatsQuery),)
 )]
 pub struct ApiDoc;
