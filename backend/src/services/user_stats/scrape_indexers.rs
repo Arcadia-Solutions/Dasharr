@@ -10,6 +10,7 @@ pub async fn scrape_indexers(arc: &Data<Dasharr>) -> Result<()> {
     let profiles = futures::stream::iter(indexers.iter())
         .filter_map(|indexer| async move {
             if indexer.enabled {
+                log::info!("scraping indexer: {}", indexer.name);
                 match indexer.clone().scrape().await {
                     Ok(profile) => Some(UserProfile {
                         base: profile,

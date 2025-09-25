@@ -22,3 +22,4 @@ log = "0.4"
 futures = "0.3"
 reqwest = { version = "0.12", features = ["json"] }
 async-trait = "0.1.89"
+env_logger = "0.11.8"

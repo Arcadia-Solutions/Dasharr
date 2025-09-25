@@ -13,6 +13,7 @@ async fn main() -> std::io::Result<()> {
     if env::var("ENV").unwrap_or("".to_string()) != "Docker" {
         dotenvy::from_filename(".env").expect("error while loading env from .env file");
     }
+    env_logger::init_from_env(env_logger::Env::default().default_filter_or("debug"));
     let env = Env::init_from_env().unwrap();
     let pool = Arc::new(
         ConnectionPool::try_new(&env.database_url)
