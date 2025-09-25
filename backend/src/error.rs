@@ -2,6 +2,8 @@
 pub enum Error {
     #[error("could not create indexer")]
     CouldNotCreateIndexer(#[source] sqlx::Error),
+    #[error("could not toggle indexer")]
+    CouldNotToggleIndexer(#[source] sqlx::Error),
     #[error("could not get indexers")]
     CouldNotGetIndexers(#[source] sqlx::Error),
     #[error("could not insert stats: {0}")]

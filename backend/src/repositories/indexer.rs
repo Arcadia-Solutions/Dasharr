@@ -38,4 +38,20 @@ impl ConnectionPool {
 
         Ok(indexers)
     }
+
+    pub async fn toggle_indexer(&self, indexer_id: i32) -> Result<()> {
+        sqlx::query!(
+            r#"
+                UPDATE indexers
+                SET enabled = NOT enabled
+                WHERE id = $1
+            "#,
+            indexer_id
+        )
+        .execute(self.borrow())
+        .await
+        .map_err(Error::CouldNotToggleIndexer)?;
+
+        Ok(())
+    }
 }

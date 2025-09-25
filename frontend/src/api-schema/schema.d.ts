@@ -32,6 +32,7 @@ export interface components {
             auth_data: {
                 [key: string]: components["schemas"]["AuthItem"];
             };
+            enabled: boolean;
             /** Format: int32 */
             id: number;
             name: string;
@@ -61,7 +62,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Successfully added the indexer */
+            /** @description Successfully got the indexer */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -85,7 +86,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Successfully added the indexer */
+            /** @description Successfully edited the indexer */
             201: {
                 headers: {
                     [name: string]: unknown;
