@@ -5,6 +5,12 @@ export type GetUserStatsQuery = components['schemas']['GetUserStatsQuery']
 
 export type UserProfileVec = components['schemas']['UserProfileVec']
 
+export type UserProfileScrapedVec = components['schemas']['UserProfileScrapedVec']
+
 export const getUserStats = async (query: GetUserStatsQuery): Promise<UserProfileVec> => {
   return (await api.get<UserProfileVec>('/user-stats', { params: query })).data
+}
+
+export const scrapeUserStats = async () => {
+  return (await api.get('/user-stats/scrape')).data
 }

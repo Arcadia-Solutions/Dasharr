@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <main style="width: 100%">
     <SearchForm @gotResults="gotResults" />
     <IndexerStatsDetail v-if="userStats" :userStats />
   </main>

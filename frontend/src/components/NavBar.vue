@@ -1,7 +1,9 @@
 <template>
   <div id="nav-bar-container">
     <div id="nav-bar">
-      <div class="left"><div class="app-name">Dasharr</div></div>
+      <div class="left">
+        <RouterLink class="app-name" to="/"> Dasharr </RouterLink>
+      </div>
       <div class="right">
         <RouterLink to="/settings">
           <Button icon="pi pi-cog" size="small" />
@@ -24,7 +26,7 @@ import { Button } from 'primevue'
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #18181b;
+  background-color: var(--background-primary);
   width: 95%;
   padding: 10px;
   border-radius: 10px;
@@ -32,5 +34,7 @@ import { Button } from 'primevue'
 .app-name {
   font-weight: bolder;
   font-size: 1.5em;
+  text-decoration: none;
+  color: var(--p-button-primary-border-color);
 }
 </style>

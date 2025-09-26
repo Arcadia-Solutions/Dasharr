@@ -19,6 +19,8 @@
     "@primeuix/themes": "^1.2.3",
     "@primevue/forms": "^4.3.9",
     "axios": "^1.12.2",
+    "chart.js": "^4.5.0",
+    "chartjs-adapter-date-fns": "^3.0.0",
     "date-fns": "^4.1.0",
     "primeicons": "^7.0.0",
     "primevue": "^4.3.9",
