@@ -30,6 +30,7 @@ import { ref } from 'vue'
 const props = defineProps<{
   userStats: UserProfileVec
 }>()
+const documentStyle = getComputedStyle(document.documentElement)
 
 const chartOptions = (value: keyof UserProfileScrapedVec) => {
   let unit = ''
@@ -82,12 +83,9 @@ const chartData = (value: (typeof displayableOnLineChart.value)[number]) => {
     datasets: [
       {
         // tension: 0.2,
+        borderColor: documentStyle.getPropertyValue('--p-button-primary-border-color'),
         label: value,
         data: data,
-        title: {
-          display: true,
-          text: 'Weight (kg)',
-        },
       },
     ],
   }
