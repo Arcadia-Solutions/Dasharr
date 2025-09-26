@@ -1,3 +1,5 @@
+use chrono::NaiveDateTime;
+
 use crate::{
     connection_pool::ConnectionPool,
     error::{Error, Result},
@@ -42,17 +44,24 @@ impl ConnectionPool {
         Ok(())
     }
 
-    pub async fn find_user_stats(&self, indexer_id: i64) -> Result<Vec<UserProfile>> {
+    pub async fn find_user_stats(
+        &self,
+        indexer_id: i64,
+        date_from: &NaiveDateTime,
+        date_to: &NaiveDateTime,
+    ) -> Result<Vec<UserProfile>> {
         // currently not possible to use a macro
         // https://github.com/launchbadge/sqlx/issues/514
         // query_as_unchecked also tries to check the result of the query...
         let indexers: Vec<UserProfile> = sqlx::query_as(
             r#"
             SELECT * FROM user_profiles
-            WHERE indexer_id = $1
+            WHERE indexer_id = $1 AND scraped_at BETWEEN  $2 AND $3
             "#,
         )
         .bind(indexer_id)
+        .bind(date_from)
+        .bind(date_to)
         .fetch_all(self.borrow())
         .await
         .map_err(Error::CouldNotGetIndexers)?;

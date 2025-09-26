@@ -52,7 +52,9 @@ const fetchUserStats = async () => {
   if (selectedIndexer.value) {
     loading.value = true
     form.value.date_from = dateRange.value[0].toISOString().slice(0, -1)
-    form.value.date_to = dateRange.value[1].toISOString().slice(0, -1)
+    form.value.date_to = new Date(dateRange.value[1].setHours(23, 59, 59, 999))
+      .toISOString()
+      .slice(0, -1)
     form.value.indexer_id = selectedIndexer.value.id
     getUserStats(form.value)
       .then((data) => emit('gotResults', data))

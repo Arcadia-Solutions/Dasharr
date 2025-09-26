@@ -81,6 +81,7 @@ const chartData = (value: (typeof displayableOnLineChart.value)[number]) => {
     labels: props.userStats.scraped_at.map((date) => new Date(date).toISOString()),
     datasets: [
       {
+        // tension: 0.2,
         label: value,
         data: data,
         title: {

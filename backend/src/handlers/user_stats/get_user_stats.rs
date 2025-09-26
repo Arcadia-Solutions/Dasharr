@@ -27,7 +27,10 @@ pub struct GetUserStatsQuery {
     )
 )]
 pub async fn exec(arc: Data<Dasharr>, query: Query<GetUserStatsQuery>) -> Result<HttpResponse> {
-    let user_stats = arc.pool.find_user_stats(query.indexer_id).await?;
+    let user_stats = arc
+        .pool
+        .find_user_stats(query.indexer_id, &query.date_from, &query.date_to)
+        .await?;
     // let test: UserProfileVec = user_stats.into();
     let user_stats_reduced = UserProfileVec::from_vec(user_stats);
 
