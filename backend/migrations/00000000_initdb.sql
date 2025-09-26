@@ -43,5 +43,6 @@ CREATE TABLE user_profiles (
     seeding INT,
     leeching INT,
     snatched INT,
-    invited INT
+    invited INT,
+    bonus_points BIGINT
 );

@@ -21,6 +21,8 @@ struct JsonStats {
     downloaded: i64,
     ratio: String,
     required_ratio: Option<String>,
+    #[serde(rename = "gold")]
+    bonus_points: Option<i64>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -92,7 +94,16 @@ impl From<UserProfileScrapedContent> for UserProfileScraped {
             leeching: Some(wrapper.community.leeching.unwrap_or(0)),
             snatched: Some(wrapper.community.snatched.unwrap_or(0)),
             invited: Some(wrapper.community.invited.unwrap_or(0)),
-            ..Default::default()
+            bonus_points: Some(wrapper.stats.bonus_points.unwrap_or(0)),
+            rank_artists: None,
+            rank_bounty: None,
+            rank_downloaded: None,
+            rank_overall: None,
+            rank_posts: None,
+            rank_requests: None,
+            rank_uploaded: None,
+            rank_uploads: None,
+            collages_contrib: None,
         }
     }
 }

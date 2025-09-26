@@ -110,6 +110,7 @@ impl From<UserProfileScrapedContent> for UserProfileScraped {
             leeching: Some(wrapper.community.leeching),
             snatched: Some(wrapper.community.snatched),
             invited: Some(wrapper.community.invited),
+            bonus_points: None,
         }
     }
 }

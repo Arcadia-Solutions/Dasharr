@@ -39,6 +39,7 @@ pub struct UserProfileScraped {
     pub leeching: Option<i32>,
     pub snatched: Option<i32>,
     pub invited: Option<i32>,
+    pub bonus_points: Option<i64>,
 }
 
 #[derive(Debug, Default, Deserialize, Serialize, FromRow, StructOfArray, ToSchema)]
