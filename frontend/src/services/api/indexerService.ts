@@ -3,6 +3,8 @@ import api from './api.ts'
 
 export type Indexer = components['schemas']['Indexer']
 
+export type IndexerLite = components['schemas']['IndexerLite']
+
 export type UpdatedIndexer = components['schemas']['UpdatedIndexer']
 
 export type AuthItem = components['schemas']['AuthItem']
@@ -17,4 +19,14 @@ export const toggleIndexer = async (id: number) => {
 
 export const getIndexers = async (): Promise<Indexer[]> => {
   return (await api.get<Indexer[]>('/indexers')).data
+}
+
+export const getIndexersLite = async (
+  only_with_available_data: boolean,
+): Promise<IndexerLite[]> => {
+  return (
+    await api.get<IndexerLite[]>(
+      `/indexers/lite?only_with_available_data=${only_with_available_data}`,
+    )
+  ).data
 }

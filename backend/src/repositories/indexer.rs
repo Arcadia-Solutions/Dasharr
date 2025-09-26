@@ -1,7 +1,7 @@
 use crate::{
     connection_pool::ConnectionPool,
     error::{Error, Result},
-    models::indexer::{Indexer, UpdatedIndexer},
+    models::indexer::{Indexer, IndexerLite, UpdatedIndexer},
 };
 use std::borrow::Borrow;
 
@@ -30,6 +30,36 @@ impl ConnectionPool {
             Indexer,
             r#"
                 SELECT * FROM indexers
+            "#
+        )
+        .fetch_all(self.borrow())
+        .await
+        .map_err(Error::CouldNotGetIndexers)?;
+
+        Ok(indexers)
+    }
+
+    pub async fn find_indexers_lite(&self) -> Result<Vec<IndexerLite>> {
+        let indexers = sqlx::query_as!(
+            IndexerLite,
+            r#"
+                SELECT id, name, enabled FROM indexers
+            "#
+        )
+        .fetch_all(self.borrow())
+        .await
+        .map_err(Error::CouldNotGetIndexers)?;
+
+        Ok(indexers)
+    }
+
+    pub async fn find_indexers_lite_with_available_data(&self) -> Result<Vec<IndexerLite>> {
+        let indexers = sqlx::query_as!(
+            IndexerLite,
+            r#"
+            SELECT DISTINCT i.id, i.name, i.enabled
+            FROM indexers i
+            INNER JOIN user_profiles up ON i.id = up.indexer_id
             "#
         )
         .fetch_all(self.borrow())

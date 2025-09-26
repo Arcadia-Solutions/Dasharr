@@ -24,6 +24,13 @@ pub struct Indexer {
 }
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct IndexerLite {
+    pub id: i32,
+    pub enabled: bool,
+    pub name: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct UpdatedIndexer {
     pub id: i32,
     #[schema(value_type = HashMap<String, AuthItem>)]

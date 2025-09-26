@@ -62,7 +62,10 @@ const displayableOnLineChart = ref<(keyof UserProfileScrapedVec)[]>([
   'leeching',
   'seeding',
 ])
-const selectedValuesForLineChart = ref<(keyof UserProfileScrapedVec)[]>(['uploaded'])
+const selectedValuesForLineChart = ref<(typeof displayableOnLineChart.value)[number][]>([
+  'uploaded',
+  'downloaded',
+])
 
 const chartData = (value: (typeof displayableOnLineChart.value)[number]) => {
   let data: number[] = []
@@ -72,7 +75,6 @@ const chartData = (value: (typeof displayableOnLineChart.value)[number]) => {
       data = props.userStats.profile[value].map((val) => val / 1024 / 1024 / 1024)
       break
     default:
-      // somehow typescript doesn't see that it'll always be number[]
       data = props.userStats.profile[value] as number[]
   }
   return {
@@ -94,6 +96,7 @@ const chartData = (value: (typeof displayableOnLineChart.value)[number]) => {
 .charts {
   display: flex;
   justify-content: center;
+  margin-top: 20px;
   .p-chart {
     background-color: var(--background-primary);
     padding: 10px;

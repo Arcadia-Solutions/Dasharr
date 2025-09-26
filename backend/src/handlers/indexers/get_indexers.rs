@@ -7,7 +7,7 @@ use actix_web::{HttpResponse, web::Data};
     tag = "Indexers",
     path = "/api/indexers",
     responses(
-        (status = 200, description = "Successfully got the indexer", body=Vec<Indexer>),
+        (status = 200, description = "Successfully got the indexers", body=Vec<Indexer>),
     )
 )]
 pub async fn exec(arc: Data<Dasharr>) -> Result<HttpResponse> {

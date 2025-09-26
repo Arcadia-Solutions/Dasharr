@@ -20,6 +20,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/indexers/lite": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Get indexers lite"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/user-stats": {
         parameters: {
             query?: never;
@@ -72,6 +88,12 @@ export interface components {
             auth_data: {
                 [key: string]: components["schemas"]["AuthItem"];
             };
+            enabled: boolean;
+            /** Format: int32 */
+            id: number;
+            name: string;
+        };
+        IndexerLite: {
             enabled: boolean;
             /** Format: int32 */
             id: number;
@@ -240,7 +262,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Successfully got the indexer */
+            /** @description Successfully got the indexers */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -271,6 +293,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Indexer"];
+                };
+            };
+        };
+    };
+    "Get indexers lite": {
+        parameters: {
+            query: {
+                only_with_available_data: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully got the indexers (lite) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IndexerLite"][];
                 };
             };
         };

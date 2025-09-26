@@ -1,7 +1,7 @@
 <template>
   <main style="width: 100%">
     <SearchForm @gotResults="gotResults" />
-    <IndexerStatsDetail v-if="userStats" :userStats />
+    <IndexerStatsDetail v-if="userStats" :userStats style="margin-top: 40px" />
   </main>
 </template>
 <script setup lang="ts">
