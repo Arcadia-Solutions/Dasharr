@@ -76,7 +76,7 @@ const chartData = (value: keyof UserProfileScrapedVec) => {
   flex-wrap: wrap;
   > * {
     margin: 0 5px;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
   }
   .p-chart {
     width: 36em;

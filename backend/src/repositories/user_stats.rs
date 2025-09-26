@@ -83,6 +83,7 @@ impl ConnectionPool {
             r#"
             SELECT * FROM user_profiles
             WHERE indexer_id = $1 AND scraped_at BETWEEN  $2 AND $3
+            ORDER BY scraped_at ASC
             "#,
         )
         .bind(indexer_id)
