@@ -6,14 +6,17 @@
   color: white;
   min-height: 100vh;
 }
-
 .p-tabs {
   border-radius: 10px;
   overflow: hidden;
 }
-
 .wrapper-center {
   display: flex;
   justify-content: center;
   width: 100%;
+}
+.title {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-bottom: 10px;
 }

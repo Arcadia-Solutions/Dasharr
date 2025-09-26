@@ -7,6 +7,7 @@
       showIcon
       fluid
       :showOnFocus="false"
+      @update:modelValue="fetchUserStats"
     />
     <Select
       v-model="selectedIndexer"
@@ -14,8 +15,8 @@
       filter
       optionLabel="name"
       placeholder="Select an indexer"
+      @change="fetchUserStats"
     />
-    <Button label="Get Stats" size="small" :loading @click="fetchUserStats" />
   </div>
 </template>
 <script lang="ts" setup>
@@ -24,7 +25,7 @@ import {
   type GetUserStatsQuery,
   type UserProfileVec,
 } from '@/services/api/userStatsService'
-import { Button, DatePicker, Select } from 'primevue'
+import { DatePicker, Select } from 'primevue'
 import { onMounted, ref } from 'vue'
 import { startOfWeek, endOfWeek } from 'date-fns'
 import { getIndexersLite, type IndexerLite } from '@/services/api/indexerService'

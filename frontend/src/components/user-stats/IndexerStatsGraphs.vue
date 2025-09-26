@@ -1,34 +1,22 @@
 <template>
   <div id="indexer-stats-detail">
-    <div class="wrapper-center">
-      <MultiSelect
-        v-model="selectedValuesForLineChart"
-        :options="displayableOnLineChart"
-        filter
-        display="chip"
-        placeholder="Charts to display"
-      />
-    </div>
+    <div class="wrapper-center title">Evolution on the selected period</div>
     <div class="charts">
-      <Chart
-        v-for="value in selectedValuesForLineChart"
-        :key="value"
-        type="line"
-        :data="chartData(value)"
-        :options="chartOptions(value)"
-      />
+      <ContentContainer v-for="value in selectedValues" :key="value">
+        <Chart type="line" :data="chartData(value)" :options="chartOptions(value)" />
+      </ContentContainer>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
 import type { UserProfileVec, UserProfileScrapedVec } from '@/services/api/userStatsService'
 import Chart from 'primevue/chart'
+import ContentContainer from '../ContentContainer.vue'
 import 'chartjs-adapter-date-fns'
-import { MultiSelect } from 'primevue'
-import { ref } from 'vue'
 
 const props = defineProps<{
   userStats: UserProfileVec
+  selectedValues: (keyof UserProfileScrapedVec)[]
 }>()
 const documentStyle = getComputedStyle(document.documentElement)
 
@@ -57,19 +45,8 @@ const chartOptions = (value: keyof UserProfileScrapedVec) => {
     },
   }
 }
-const displayableOnLineChart = ref<(keyof UserProfileScrapedVec)[]>([
-  'downloaded',
-  'uploaded',
-  'bonus_points',
-  'leeching',
-  'seeding',
-])
-const selectedValuesForLineChart = ref<(typeof displayableOnLineChart.value)[number][]>([
-  'uploaded',
-  'downloaded',
-])
 
-const chartData = (value: (typeof displayableOnLineChart.value)[number]) => {
+const chartData = (value: keyof UserProfileScrapedVec) => {
   let data: number[] = []
   switch (value) {
     case 'uploaded':
@@ -96,13 +73,14 @@ const chartData = (value: (typeof displayableOnLineChart.value)[number]) => {
 .charts {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  flex-wrap: wrap;
+  > * {
+    margin: 0 5px;
+    margin-bottom: 5px;
+  }
   .p-chart {
-    background-color: var(--background-primary);
-    padding: 10px;
-    border-radius: 7px;
-    width: 40%;
-    margin: 10px;
+    width: 36em;
+    height: auto;
   }
 }
 </style>
