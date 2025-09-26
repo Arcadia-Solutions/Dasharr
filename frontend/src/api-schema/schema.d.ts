@@ -117,6 +117,10 @@ export interface components {
             /** @description  a vector of `
              *     ` from a
              *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            bonus_points: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
             class: string[];
             /** @description  a vector of `
              *     ` from a

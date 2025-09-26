@@ -5,7 +5,9 @@ use utoipa::ToSchema;
 
 use crate::{
     models::user_stats::UserProfileScraped,
-    services::user_stats::{gazelle_games::GazelleGamesScraper, redacted::RedactedScraper},
+    services::user_stats::{
+        gazelle_games::GazelleGamesScraper, orpheus::OrpheusScraper, redacted::RedactedScraper,
+    },
 };
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
@@ -68,6 +70,10 @@ impl Indexer {
             "Redacted" => {
                 static REDACTED_SCRAPER: RedactedScraper = RedactedScraper;
                 &REDACTED_SCRAPER
+            }
+            "Orpheus" => {
+                static ORPHEUS_SCRAPER: OrpheusScraper = OrpheusScraper;
+                &ORPHEUS_SCRAPER
             }
             "GazelleGames" => {
                 static GAZELLE_GAMES_SCRAPER: GazelleGamesScraper = GazelleGamesScraper;

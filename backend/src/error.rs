@@ -17,10 +17,11 @@ impl actix_web::ResponseError for Error {
     fn status_code(&self) -> actix_web::http::StatusCode {
         use actix_web::http::StatusCode;
 
-        match self {
-            // 500 Internal Server Error
-            _ => StatusCode::INTERNAL_SERVER_ERROR,
-        }
+        // match self {
+        //     // 500 Internal Server Error
+        //     _ => StatusCode::INTERNAL_SERVER_ERROR,
+        // }
+        StatusCode::INTERNAL_SERVER_ERROR
     }
 
     fn error_response(&self) -> actix_web::HttpResponse {

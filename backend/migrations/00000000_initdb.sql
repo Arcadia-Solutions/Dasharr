@@ -8,7 +8,7 @@ CREATE TABLE indexers (
 INSERT INTO indexers (name, auth_data) VALUES
 ('Redacted', '{"api_key": {"value": "", "explanation": "Get it from your profile''s settings, in \"Access Settings\""},"user_id": {"value": "", "explanation": null}}'),
 ('GazelleGames', '{"api_key": {"value": "", "explanation": "Get it from your profile''s settings"},"user_id": {"value": "", "explanation": null}}'),
-('Orpheus', '{"api_key": {"value": "", "explanation": "Get it from your profile''s settings, in \"Access Settings\""}}');
+('Orpheus', '{"api_key": {"value": "", "explanation": "Get it from your profile''s settings, in \"Access Settings\""},"user_id": {"value": "", "explanation": null}}');
 
 CREATE TABLE user_profiles (
     scraped_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,

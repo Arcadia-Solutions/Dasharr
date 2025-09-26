@@ -60,6 +60,7 @@ const chartOptions = (value: keyof UserProfileScrapedVec) => {
 const displayableOnLineChart = ref<(keyof UserProfileScrapedVec)[]>([
   'downloaded',
   'uploaded',
+  'bonus_points',
   'leeching',
   'seeding',
 ])
