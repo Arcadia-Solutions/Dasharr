@@ -30,6 +30,7 @@
         size="small"
         @click="scrapeUserStatsNow"
         :loading="scrapingUserStats"
+        v-tooltip.top="'The request might take a while as some indexers have slow response times'"
       />
     </div>
   </div>

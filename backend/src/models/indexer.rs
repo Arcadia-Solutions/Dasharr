@@ -6,7 +6,8 @@ use utoipa::ToSchema;
 use crate::{
     models::user_stats::UserProfileScraped,
     services::user_stats::{
-        gazelle_games::GazelleGamesScraper, orpheus::OrpheusScraper, redacted::RedactedScraper,
+        broadcasthenet::BroadcasthenetScraper, gazelle_games::GazelleGamesScraper,
+        orpheus::OrpheusScraper, redacted::RedactedScraper,
     },
 };
 
@@ -78,6 +79,10 @@ impl Indexer {
             "GazelleGames" => {
                 static GAZELLE_GAMES_SCRAPER: GazelleGamesScraper = GazelleGamesScraper;
                 &GAZELLE_GAMES_SCRAPER
+            }
+            "Broadcasthenet" => {
+                static BROADCASTHENET_SCRAPER: BroadcasthenetScraper = BroadcasthenetScraper;
+                &BROADCASTHENET_SCRAPER
             }
             _ => {
                 return Err(Box::new(ScraperError::ScraperNotFound(self.name.clone())));
