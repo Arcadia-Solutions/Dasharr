@@ -53,17 +53,22 @@ FROM debian:bookworm-slim AS runtime
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y libssl-dev openssl curl pkg-config ca-certificates nginx postgresql tini
+RUN apt-get update && apt-get install -y libssl-dev openssl curl pkg-config ca-certificates nginx postgresql tini gcc
 
 COPY --from=builder_backend /usr/local/bin/dasharr_backend /usr/local/bin
 
 COPY --from=builder_frontend /home/node/app/dist/ /usr/share/nginx/html
 COPY ./docker/nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY ./backend/migrations/00000000_initdb.sql /tmp/initdb.sql
+COPY ./backend/migrations/ /migrations
 
-COPY ./docker/entrypoint.sh /
-RUN chmod +x /entrypoint.sh
+COPY ./docker/initdb.sh /
+RUN chmod +x /initdb.sh
+
+# install sqlx-cli to handle database migrations
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN cargo install sqlx-cli
 
 # frontend
 EXPOSE 80
@@ -77,8 +82,7 @@ EXPOSE 5432
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 CMD ["sh", "-c", "\
-    cd / && /entrypoint.sh && \
-    /etc/init.d/postgresql start -D /usr/local/pgsql/data && \
+    cd / && /initdb.sh && \
     cd /usr/local/bin/ && ./dasharr_backend & \
     nginx -g 'daemon off;' & \
     wait"]

@@ -1,16 +1,34 @@
 services:
+  db:
+    container_name: dasharr_db
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    volumes:
+      - db_data:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+    env_file:
+      - backend/.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dasharr"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   dasharr:
     container_name: dasharr
     image: dasharr
     ports:
       - 3000:80
       - 3001:8080
-      # if you want access to the db outside of the container
-      - 3002:5432
     environment:
       - ENV=Docker
     env_file:
       - backend/.env
-    volumes:
-      # you probably want to save/backup the db
-      - /path/to/backup/folder:/usr/local/pgsql/data
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:

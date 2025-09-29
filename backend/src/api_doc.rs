@@ -4,7 +4,7 @@ use crate::handlers::user_stats::get_user_stats::GetUserStatsQuery;
 
 #[derive(OpenApi)]
 #[openapi(
-    info(title = "arcadia-backend API",),
+    info(title = "dasharr-backend API",),
     paths(
         crate::handlers::indexers::edit_indexer::exec,
         crate::handlers::indexers::get_indexers::exec,

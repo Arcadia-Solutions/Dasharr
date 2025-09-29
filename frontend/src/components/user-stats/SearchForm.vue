@@ -65,7 +65,7 @@ const fetchUserStats = async () => {
 onMounted(async () => {
   const indexers = await getIndexersLite(true)
   if (indexers.length === 0) {
-    showToast('', 'No indexer with data available. Set them up in the settings', 'Warn', 4000)
+    showToast('', 'No indexer with data available. Set them up in the settings', 'warn', 4000)
     return
   }
   selectableIndexers.value = indexers
