@@ -12,7 +12,7 @@ impl FromRequest for ApiKey {
     fn from_request(req: &HttpRequest, _payload: &mut actix_web::dev::Payload) -> Self::Future {
         let api_key = req
             .headers()
-            .get("api_key")
+            .get("api-key")
             .and_then(|value| value.to_str().ok())
             .map(|s| s.to_owned());
 

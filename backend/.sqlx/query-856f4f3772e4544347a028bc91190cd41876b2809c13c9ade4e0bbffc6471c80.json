@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                UPDATE indexers\n                SET enabled = NOT enabled\n                WHERE id = $1\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "856f4f3772e4544347a028bc91190cd41876b2809c13c9ade4e0bbffc6471c80"
+}

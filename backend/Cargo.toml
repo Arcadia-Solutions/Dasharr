@@ -3,6 +3,10 @@ name = "dasharr"
 version = "0.1.0"
 edition = "2024"
 
+[[bin]]
+name = "dasharr"
+path = "src/main.rs"
+
 [dependencies]
 actix-web = "4"
 utoipa = { version = "5.3.1", features = ["actix_extras", "chrono"] }

@@ -2,7 +2,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: import.meta.env.VITE_BACKEND_URL || window.location.origin + '/api',
   timeout: 120000,
   headers: {
     'Content-Type': 'application/json',
@@ -13,7 +13,7 @@ api.interceptors.request.use(
   (config) => {
     const api_key = localStorage.getItem('api_key')
     if (api_key) {
-      config.headers.api_key = api_key
+      config.headers['api-key'] = api_key
     }
     return config
   },

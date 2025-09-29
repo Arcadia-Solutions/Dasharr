@@ -1,0 +1,16 @@
+services:
+  dasharr:
+    container_name: dasharr
+    image: dasharr
+    ports:
+      - 3000:80
+      - 3001:8080
+      # if you want access to the db outside of the container
+      - 3002:5432
+    environment:
+      - ENV=Docker
+    env_file:
+      - backend/.env
+    volumes:
+      # you probably want to save/backup the db
+      - /path/to/backup/folder:/usr/local/pgsql/data
