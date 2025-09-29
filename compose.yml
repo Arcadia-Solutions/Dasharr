@@ -18,7 +18,7 @@ services:
 
   dasharr:
     container_name: dasharr
-    image: dasharr
+    image: ghcr.io/arcadia-solutions/dasharr:latest
     ports:
       - 3000:80
       - 3001:8080
