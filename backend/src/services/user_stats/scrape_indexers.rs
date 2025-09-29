@@ -1,11 +1,12 @@
-use actix_web::web::Data;
+use std::sync::Arc;
+
 use chrono::Local;
 use futures::StreamExt;
 
-use crate::{Dasharr, error::Result, models::user_stats::UserProfile};
+use crate::{connection_pool::ConnectionPool, error::Result, models::user_stats::UserProfile};
 
-pub async fn scrape_indexers(arc: &Data<Dasharr>) -> Result<()> {
-    let indexers = arc.pool.find_indexers().await?;
+pub async fn scrape_indexers(pool: &Arc<ConnectionPool>) -> Result<()> {
+    let indexers = pool.find_indexers().await?;
 
     let profiles = futures::stream::iter(indexers.iter())
         .filter_map(|indexer| async move {
@@ -29,7 +30,7 @@ pub async fn scrape_indexers(arc: &Data<Dasharr>) -> Result<()> {
         .collect::<Vec<_>>()
         .await;
 
-    arc.pool.create_stats(&profiles).await?;
+    pool.create_stats(&profiles).await?;
 
     Ok(())
 }

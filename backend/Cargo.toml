@@ -28,3 +28,4 @@ reqwest = { version = "0.12", features = ["json"] }
 async-trait = "0.1.89"
 env_logger = "0.11.8"
 soa_derive = "0.14.0"
+tokio-cron-scheduler = "0.14"

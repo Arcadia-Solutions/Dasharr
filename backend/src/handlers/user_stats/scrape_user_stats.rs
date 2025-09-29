@@ -11,7 +11,7 @@ use actix_web::{HttpResponse, web::Data};
     )
 )]
 pub async fn exec(arc: Data<Dasharr>) -> Result<HttpResponse> {
-    scrape_indexers(&arc).await?;
+    scrape_indexers(&arc.pool).await?;
 
     Ok(HttpResponse::Ok().json("{}"))
 }

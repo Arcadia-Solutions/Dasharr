@@ -1,6 +1,9 @@
 use actix_cors::Cors;
 use actix_web::{App, HttpServer, middleware, web::Data};
-use dasharr::{Dasharr, api_doc::ApiDoc, connection_pool::ConnectionPool, env::Env, routes::init};
+use dasharr::{
+    Dasharr, api_doc::ApiDoc, connection_pool::ConnectionPool, env::Env, routes::init,
+    scheduler::run_periodic_tasks,
+};
 use envconfig::Envconfig;
 use std::{env, sync::Arc};
 use utoipa::OpenApi;
@@ -21,7 +24,7 @@ async fn main() -> std::io::Result<()> {
             .expect("db connection couldn't be established"),
     );
 
-    let arc = Data::new(Dasharr::new(Arc::clone(&pool), env));
+    let arc = Data::new(Dasharr::new(Arc::clone(&pool), env.clone()));
 
     let server_url = "127.0.0.1:8080".to_string();
     println!("Server running at http://{server_url}");
@@ -40,6 +43,11 @@ async fn main() -> std::io::Result<()> {
     })
     .bind(server_url)?
     .run();
+
+    let arc_2 = Arc::new(Dasharr::new(Arc::clone(&pool), env.clone()));
+    if let Err(e) = run_periodic_tasks(arc_2).await {
+        eprintln!("Error running cron tasks: {e:?}");
+    }
 
     server.await
 }
