@@ -41,9 +41,6 @@ WORKDIR /home/node/app
 
 COPY ./frontend .
 
-# env vars are needed at build time
-# RUN cp -n .env.docker .env
-
 RUN --mount=type=cache,target=/root/.npm \
     npm ci --verbose --no-audit
 # This should be npm run build
@@ -55,20 +52,22 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y libssl-dev openssl curl pkg-config ca-certificates nginx postgresql tini gcc
 
+# install sqlx-cli to handle database migrations
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN cargo install sqlx-cli
+
 COPY --from=builder_backend /usr/local/bin/dasharr_backend /usr/local/bin
 
 COPY --from=builder_frontend /home/node/app/dist/ /usr/share/nginx/html
-COPY ./docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./docker/nginx.conf /etc/nginx/nginx.conf
 
 COPY ./backend/migrations/ /migrations
 
 COPY ./docker/initdb.sh /
 RUN chmod +x /initdb.sh
 
-# install sqlx-cli to handle database migrations
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
-RUN cargo install sqlx-cli
+
 
 # frontend
 EXPOSE 80
