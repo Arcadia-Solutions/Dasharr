@@ -33,7 +33,7 @@ const chartOptions = (value: keyof UserProfileScrapedVec) => {
       x: {
         type: 'time',
         time: {
-          unit: 'month',
+          unit: 'day',
         },
       },
       y: {

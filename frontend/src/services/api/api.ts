@@ -2,7 +2,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL || window.location.origin + '/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || window.location.origin + '/api',
   timeout: 120000,
   headers: {
     'Content-Type': 'application/json',
