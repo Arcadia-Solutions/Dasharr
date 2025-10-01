@@ -88,12 +88,17 @@ const indexerEdited = () => {
 }
 const scrapeUserStatsNow = async () => {
   scrapingUserStats.value = true
-  scrapeUserStats().finally(() => {
-    scrapingUserStats.value = false
-  })
+  scrapeUserStats()
+    .then(() => fetchIndexers())
+    .finally(() => {
+      scrapingUserStats.value = false
+    })
 }
-onMounted(() => {
+const fetchIndexers = async () => {
   getIndexersEnriched(false).then((i) => (indexers.value = i))
+}
+onMounted(async () => {
+  await fetchIndexers()
 })
 </script>
 <style scoped>
