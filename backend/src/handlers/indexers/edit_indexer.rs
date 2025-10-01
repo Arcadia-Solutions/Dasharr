@@ -17,8 +17,9 @@ use actix_web::{
         (status = 201, description = "Successfully edited the indexer", body=Indexer),
     )
 )]
-pub async fn exec(arc: Data<Dasharr>, new_indexer: Json<UpdatedIndexer>) -> Result<HttpResponse> {
-    let created_indexer = arc.pool.update_indexer(&new_indexer).await?;
+pub async fn exec(arc: Data<Dasharr>, indexer: Json<UpdatedIndexer>) -> Result<HttpResponse> {
+    let updated_indexer = arc.pool.update_indexer(&indexer).await?;
+    updated_indexer.clone().scrape().await?;
 
-    Ok(HttpResponse::Created().json(created_indexer))
+    Ok(HttpResponse::Created().json(updated_indexer))
 }

@@ -7,7 +7,7 @@
         <InputText v-model="authItem.value" :placeholder="name" />
       </div>
       <div class="wrapper-center">
-        <Button type="submit" label="Submit" size="small" style="margin-top: 20px" />
+        <Button type="submit" label="Submit" size="small" style="margin-top: 20px" :loading />
       </div>
     </Form>
   </div>
@@ -17,6 +17,7 @@ import { type AuthItem, editIndexer, getIndexerAuthData, type Indexer } from '@/
 import { InputText, Button } from 'primevue'
 import { Form } from '@primevue/forms'
 import { onMounted, ref } from 'vue'
+import { showToast } from '@/main'
 
 const props = defineProps<{
   indexerId: number
@@ -26,11 +27,19 @@ const emit = defineEmits<{
   indexerEdited: [Indexer]
 }>()
 
+const loading = ref(false)
+
 const authData = ref<Record<string, AuthItem>>()
 
 const submit = () => {
   if (authData.value) {
-    editIndexer({ id: props.indexerId, auth_data: authData.value }).then((indexer) => emit('indexerEdited', indexer))
+    loading.value = true
+    editIndexer({ id: props.indexerId, auth_data: authData.value })
+      .then((indexer) => {
+        showToast('', 'Indexer config has been validated and saved', 'success', 2000)
+        emit('indexerEdited', indexer)
+      })
+      .finally(() => (loading.value = false))
   }
 }
 

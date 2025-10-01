@@ -1,4 +1,5 @@
 // import { showToast } from '@/main'
+import { showToast } from '@/main'
 import axios from 'axios'
 
 const api = axios.create({
@@ -35,11 +36,11 @@ api.interceptors.response.use(
       window.location.replace('/login')
       return new Promise(() => {})
     }
-    // if (error.response && error.response.data && error.response.data.error) {
-    //   showToast('error', error.response.data.error, 'error', 4000)
-    // } else {
-    //   showToast('error', 'An unexpected error occurred.', 'error', 4000)
-    // }
+    if (error.response && error.response.data && error.response.data.error) {
+      showToast('error', error.response.data.error, 'error', 4000)
+    } else {
+      showToast('error', 'An unexpected error occurred.', 'error', 4000)
+    }
     return Promise.reject(error)
   },
 )

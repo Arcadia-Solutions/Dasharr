@@ -5,6 +5,7 @@ use serde_json::Value;
 use utoipa::ToSchema;
 
 use crate::{
+    error::{Error, Result},
     models::user_stats::UserProfileScraped,
     services::user_stats::{
         broadcasthenet::BroadcasthenetScraper, gazelle_games::GazelleGamesScraper,
@@ -45,10 +46,7 @@ pub struct UpdatedIndexer {
 
 #[async_trait]
 pub trait Scraper {
-    async fn scrape(
-        &self,
-        indexer: Indexer,
-    ) -> Result<UserProfileScraped, Box<dyn std::error::Error>>;
+    async fn scrape(&self, indexer: Indexer) -> Result<UserProfileScraped>;
 }
 
 #[derive(Debug)]
@@ -69,7 +67,7 @@ impl std::fmt::Display for ScraperError {
 impl std::error::Error for ScraperError {}
 
 impl Indexer {
-    pub async fn scrape(self) -> Result<UserProfileScraped, Box<dyn std::error::Error>> {
+    pub async fn scrape(self) -> Result<UserProfileScraped> {
         let scraper_ref: &dyn Scraper = match self.name.as_str() {
             "Redacted" => {
                 static REDACTED_SCRAPER: RedactedScraper = RedactedScraper;
@@ -88,11 +86,13 @@ impl Indexer {
                 &BROADCASTHENET_SCRAPER
             }
             _ => {
-                return Err(Box::new(ScraperError::ScraperNotFound(self.name.clone())));
+                return Err(Error::CouldNotScrapeIndexer(
+                    "indexer has no scraper".into(),
+                ));
             }
         };
 
-        let profile = scraper_ref.scrape(self).await?;
+        let profile = scraper_ref.scrape(self).await?; //.map_err(|e| Error::CouldNotScrapeIndexer(format!("{}", e.into())))?;
         Ok(profile)
     }
 }

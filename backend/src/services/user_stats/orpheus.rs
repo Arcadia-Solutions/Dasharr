@@ -1,9 +1,12 @@
 use async_trait::async_trait;
 use serde::Deserialize;
 
-use crate::models::{
-    indexer::{Indexer, Scraper},
-    user_stats::UserProfileScraped,
+use crate::{
+    error::{Error, Result},
+    models::{
+        indexer::{Indexer, Scraper},
+        user_stats::UserProfileScraped,
+    },
 };
 
 pub struct OrpheusScraper;
@@ -11,7 +14,9 @@ pub struct OrpheusScraper;
 //------------- For action=user
 #[derive(Debug, Deserialize)]
 struct OrpheusProfileResponse {
-    response: UserProfileScrapedContent,
+    response: Option<UserProfileScrapedContent>,
+    status: String,
+    error: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -82,7 +87,8 @@ struct UserProfileScrapedContent {
 #[derive(Debug, Deserialize)]
 pub struct OrpheusIndexResponse {
     pub status: String,
-    pub response: Index,
+    pub error: Option<String>,
+    pub response: Option<Index>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -158,25 +164,26 @@ impl From<UserProfileScrapedContent> for UserProfileScraped {
 
 #[async_trait]
 impl Scraper for OrpheusScraper {
-    async fn scrape(
-        &self,
-        indexer: Indexer,
-    ) -> Result<UserProfileScraped, Box<dyn std::error::Error>> {
+    async fn scrape(&self, indexer: Indexer) -> Result<UserProfileScraped> {
         let client = reqwest::Client::new();
         let user_id = indexer
             .auth_data
             .get("user_id")
-            .ok_or("orpheus user_id not found")?
+            .ok_or("orpheus user_id not found")
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
             .get("value")
-            .ok_or("orpheus user_id value not found")?
+            .ok_or("orpheus user_id value not found")
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
             .as_str()
             .unwrap();
         let api_key = indexer
             .auth_data
             .get("api_key")
-            .ok_or("orpheus API key not found")?
+            .ok_or("orpheus API key not found")
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
             .get("value")
-            .ok_or("orpheus API key value not found")?
+            .ok_or("orpheus API key value not found")
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
             .as_str()
             .unwrap();
         let res = client
@@ -186,26 +193,35 @@ impl Scraper for OrpheusScraper {
             ))
             .header("Authorization", api_key)
             .send()
-            .await?;
-        let body = res.text().await?;
-        let mut profile: UserProfileScraped =
-            serde_json::from_str::<OrpheusProfileResponse>(&body)?
-                .response
-                .into();
+            .await
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
+        let body = res.text().await.unwrap();
+
+        let response = serde_json::from_str::<OrpheusProfileResponse>(&body)
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
+        if response.status != "success" {
+            return Err(Error::CouldNotScrapeIndexer(
+                response.error.unwrap_or(response.status),
+            ));
+        }
+        let mut profile: UserProfileScraped = response.response.unwrap().into();
 
         // bonus points are only available on another endpoint
         let res = client
             .get("https://orpheus.network/ajax.php?action=index")
             .header("Authorization", api_key)
             .send()
-            .await?;
-        let body = res.text().await?;
-        profile.bonus_points = Some(
-            serde_json::from_str::<OrpheusIndexResponse>(&body)?
-                .response
-                .userstats
-                .bonus_points,
-        );
+            .await
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
+        let body = res.text().await.unwrap();
+        let response = serde_json::from_str::<OrpheusIndexResponse>(&body)
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
+        if response.status != "success" {
+            return Err(Error::CouldNotScrapeIndexer(
+                response.error.unwrap_or(response.status),
+            ));
+        }
+        profile.bonus_points = Some(response.response.unwrap().userstats.bonus_points);
 
         Ok(profile)
     }

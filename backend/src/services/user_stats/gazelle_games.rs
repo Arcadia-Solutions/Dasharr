@@ -1,16 +1,21 @@
 use async_trait::async_trait;
 use serde::Deserialize;
 
-use crate::models::{
-    indexer::{Indexer, Scraper},
-    user_stats::UserProfileScraped,
+use crate::{
+    error::{Error, Result},
+    models::{
+        indexer::{Indexer, Scraper},
+        user_stats::UserProfileScraped,
+    },
 };
 
 pub struct GazelleGamesScraper;
 
 #[derive(Debug, Deserialize)]
 struct GazelleGamesResponse {
-    response: UserProfileScrapedContent,
+    response: Option<UserProfileScrapedContent>,
+    status: String,
+    error: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -110,10 +115,7 @@ impl From<UserProfileScrapedContent> for UserProfileScraped {
 
 #[async_trait]
 impl Scraper for GazelleGamesScraper {
-    async fn scrape(
-        &self,
-        indexer: Indexer,
-    ) -> Result<UserProfileScraped, Box<dyn std::error::Error>> {
+    async fn scrape(&self, indexer: Indexer) -> Result<UserProfileScraped> {
         let client = reqwest::Client::new();
         let res = client
             .get(format!(
@@ -121,9 +123,11 @@ impl Scraper for GazelleGamesScraper {
                 indexer
                     .auth_data
                     .get("user_id")
-                    .ok_or("ggn user_id not found")?
+                    .ok_or("ggn user_id not found")
+                    .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
                     .get("value")
-                    .ok_or("ggn user_id value not found")?
+                    .ok_or("ggn user_id value not found")
+                    .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
                     .as_str()
                     .unwrap()
             ))
@@ -132,20 +136,28 @@ impl Scraper for GazelleGamesScraper {
                 indexer
                     .auth_data
                     .get("api_key")
-                    .ok_or("ggn API key not found")?
+                    .ok_or("ggn API key not found")
+                    .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?
                     .get("value")
-                    .ok_or("ggn API key value not found")?
+                    .ok_or("ggn API key value not found")
+                    .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?
                     .as_str()
                     .unwrap(),
             )
             .send()
-            .await?;
+            .await
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
 
-        let body = res.text().await?;
-        let profile: UserProfileScraped = serde_json::from_str::<GazelleGamesResponse>(&body)?
-            .response
-            .into();
+        let body = res.text().await.unwrap();
+        let response = serde_json::from_str::<GazelleGamesResponse>(&body)
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
 
-        Ok(profile)
+        if response.status != "success" {
+            return Err(Error::CouldNotScrapeIndexer(
+                response.error.unwrap_or(response.status),
+            ));
+        }
+
+        Ok(response.response.unwrap().into())
     }
 }

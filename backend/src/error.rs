@@ -10,6 +10,8 @@ pub enum Error {
     CouldNotGetIndexerAuthData(#[source] sqlx::Error),
     #[error("could not insert stats: {0}")]
     CouldNotInsertStats(String),
+    #[error("error scraping indexer: {0}")]
+    CouldNotScrapeIndexer(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
