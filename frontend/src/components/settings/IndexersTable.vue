@@ -2,6 +2,11 @@
   <div>
     <DataTable :value="indexers">
       <Column field="name" header="Name" />
+      <Column field="last_scraped_at" header="Last scraped">
+        <template #body="slotProps">
+          {{ timeAgo(slotProps.data.last_scraped_at) }}
+        </template>
+      </Column>
       <Column>
         <template #body="slotProps">
           <div class="actions">
@@ -48,6 +53,7 @@ import { onMounted, ref } from 'vue'
 import IndexerSettings from './IndexerSettings.vue'
 import { showToast } from '@/main'
 import { scrapeUserStats } from '@/services/api/userStatsService'
+import { timeAgo } from '@/services/helpers'
 
 const scrapingUserStats = ref(false)
 

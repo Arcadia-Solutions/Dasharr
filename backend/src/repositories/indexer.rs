@@ -87,7 +87,7 @@ impl ConnectionPool {
             r#"
             SELECT DISTINCT ON (i.id) i.id, i.name, i.enabled, up.scraped_at AS last_scraped_at
             FROM indexers AS i
-            LEFT JOIN user_profiles AS up
+            INNER JOIN user_profiles AS up
               ON i.id = up.indexer_id
             ORDER BY i.id DESC;
             "#
