@@ -23,7 +23,7 @@ jobs:
     container: rust:1.89-bullseye
 
     services:
-      arcadiadb:
+      dasharrdb:
         image: postgres
         env:
           POSTGRES_USER: dasharr
@@ -102,7 +102,7 @@ jobs:
         working-directory: ./backend/storage
 
     services:
-      arcadiadb:
+      dasharrdb:
         image: postgres
         env:
           POSTGRES_USER: dasharr

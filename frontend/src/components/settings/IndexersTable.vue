@@ -25,7 +25,7 @@
         <IndexerSettings
           v-if="indexerIdBeingEdited !== null"
           :indexerId="indexerIdBeingEdited"
-          @indexer-created="indexerEdited"
+          @indexer-edited="indexerEdited"
         />
       </Dialog>
     </DataTable>
