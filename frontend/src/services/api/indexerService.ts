@@ -3,7 +3,7 @@ import api from './api.ts'
 
 export type Indexer = components['schemas']['Indexer']
 
-export type IndexerLite = components['schemas']['IndexerLite']
+export type IndexerEnriched = components['schemas']['IndexerEnriched']
 
 export type UpdatedIndexer = components['schemas']['UpdatedIndexer']
 
@@ -17,16 +17,20 @@ export const toggleIndexer = async (id: number) => {
   return (await api.put(`/indexers/${id}/toggle`)).data
 }
 
+export const getIndexerAuthData = async (id: number): Promise<{ [key: string]: AuthItem }> => {
+  return (await api.get<{ [key: string]: AuthItem }>(`/indexers/${id}/auth-data`)).data
+}
+
 export const getIndexers = async (): Promise<Indexer[]> => {
   return (await api.get<Indexer[]>('/indexers')).data
 }
 
-export const getIndexersLite = async (
+export const getIndexersEnriched = async (
   only_with_available_data: boolean,
-): Promise<IndexerLite[]> => {
+): Promise<IndexerEnriched[]> => {
   return (
-    await api.get<IndexerLite[]>(
-      `/indexers/lite?only_with_available_data=${only_with_available_data}`,
+    await api.get<IndexerEnriched[]>(
+      `/indexers/enriched?only_with_available_data=${only_with_available_data}`,
     )
   ).data
 }

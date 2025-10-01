@@ -12,15 +12,15 @@
                   toggleIndexerEnabledStatus(newVal, slotProps.data.id, slotProps.data.name)
               "
             />
-            <Button icon="pi pi-pencil" size="small" @click="editIndexer(slotProps.data)" />
+            <Button icon="pi pi-pencil" size="small" @click="editIndexer(slotProps.data.id)" />
           </div>
         </template>
       </Column>
-      <Dialog v-model:visible="indexerSettingsDialogVisible" @hide="indexerBeingEdited = null">
+      <Dialog v-model:visible="indexerSettingsDialogVisible" @hide="indexerIdBeingEdited = null">
         <IndexerSettings
-          v-if="indexerBeingEdited !== null"
-          :indexer="indexerBeingEdited"
-          @indexer-created="indexerCreated"
+          v-if="indexerIdBeingEdited !== null"
+          :indexerId="indexerIdBeingEdited"
+          @indexer-created="indexerEdited"
         />
       </Dialog>
     </DataTable>
@@ -40,10 +40,9 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import { ToggleSwitch, Button, Dialog } from 'primevue'
 import {
-  getIndexers,
-  type Indexer,
-  type UpdatedIndexer,
   toggleIndexer,
+  getIndexersEnriched,
+  type IndexerEnriched,
 } from '@/services/api/indexerService'
 import { onMounted, ref } from 'vue'
 import IndexerSettings from './IndexerSettings.vue'
@@ -52,12 +51,12 @@ import { scrapeUserStats } from '@/services/api/userStatsService'
 
 const scrapingUserStats = ref(false)
 
-const indexers = ref<Indexer[]>([])
-const indexerBeingEdited = ref<UpdatedIndexer | null>(null)
+const indexers = ref<IndexerEnriched[]>([])
+const indexerIdBeingEdited = ref<number | null>(null)
 const indexerSettingsDialogVisible = ref(false)
 
-const editIndexer = (indexer: UpdatedIndexer) => {
-  indexerBeingEdited.value = indexer
+const editIndexer = (indexerId: number) => {
+  indexerIdBeingEdited.value = indexerId
   indexerSettingsDialogVisible.value = true
 }
 const toggleIndexerEnabledStatus = (newVal: boolean, id: number, name: string) => {
@@ -77,8 +76,8 @@ const toggleIndexerEnabledStatus = (newVal: boolean, id: number, name: string) =
       )
     })
 }
-const indexerCreated = () => {
-  indexerBeingEdited.value = null
+const indexerEdited = () => {
+  indexerIdBeingEdited.value = null
   indexerSettingsDialogVisible.value = false
 }
 const scrapeUserStatsNow = async () => {
@@ -88,7 +87,7 @@ const scrapeUserStatsNow = async () => {
   })
 }
 onMounted(() => {
-  getIndexers().then((i) => (indexers.value = i))
+  getIndexersEnriched(false).then((i) => (indexers.value = i))
 })
 </script>
 <style scoped>

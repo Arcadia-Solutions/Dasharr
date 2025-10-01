@@ -6,6 +6,8 @@ pub enum Error {
     CouldNotToggleIndexer(#[source] sqlx::Error),
     #[error("could not get indexers")]
     CouldNotGetIndexers(#[source] sqlx::Error),
+    #[error("could not get indexer's auth data")]
+    CouldNotGetIndexerAuthData(#[source] sqlx::Error),
     #[error("could not insert stats: {0}")]
     CouldNotInsertStats(String),
 }

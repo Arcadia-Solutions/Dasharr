@@ -1,7 +1,9 @@
+use serde_json::Value;
+
 use crate::{
     connection_pool::ConnectionPool,
     error::{Error, Result},
-    models::indexer::{Indexer, IndexerLite, UpdatedIndexer},
+    models::indexer::{Indexer, IndexerEnriched, UpdatedIndexer},
 };
 use std::borrow::Borrow;
 
@@ -39,11 +41,37 @@ impl ConnectionPool {
         Ok(indexers)
     }
 
-    pub async fn find_indexers_lite(&self) -> Result<Vec<IndexerLite>> {
-        let indexers = sqlx::query_as!(
-            IndexerLite,
+    pub async fn find_indexer_auth_data(&self, id: i32) -> Result<Value> {
+        let auth_data_record = sqlx::query!(
             r#"
-                SELECT id, name, enabled FROM indexers
+                SELECT auth_data FROM indexers WHERE id = $1
+            "#,
+            id
+        )
+        .fetch_one(self.borrow())
+        .await
+        .map_err(Error::CouldNotGetIndexerAuthData)?;
+
+        Ok(auth_data_record.auth_data)
+    }
+
+    pub async fn find_indexers_enriched(&self) -> Result<Vec<IndexerEnriched>> {
+        let indexers = sqlx::query_as!(
+            IndexerEnriched,
+            r#"
+            SELECT
+                i.id,
+                i.name,
+                i.enabled,
+                MAX(up.scraped_at) AS last_scraped_at
+            FROM
+                indexers AS i
+            LEFT JOIN
+                user_profiles AS up ON up.indexer_id = i.id
+            GROUP BY
+                i.id, i.name, i.enabled
+            ORDER BY
+                i.id;
             "#
         )
         .fetch_all(self.borrow())
@@ -53,13 +81,15 @@ impl ConnectionPool {
         Ok(indexers)
     }
 
-    pub async fn find_indexers_lite_with_available_data(&self) -> Result<Vec<IndexerLite>> {
+    pub async fn find_indexers_enriched_with_available_data(&self) -> Result<Vec<IndexerEnriched>> {
         let indexers = sqlx::query_as!(
-            IndexerLite,
+            IndexerEnriched,
             r#"
-            SELECT DISTINCT i.id, i.name, i.enabled
-            FROM indexers i
-            INNER JOIN user_profiles up ON i.id = up.indexer_id
+            SELECT DISTINCT ON (i.id) i.id, i.name, i.enabled, up.scraped_at AS last_scraped_at
+            FROM indexers AS i
+            LEFT JOIN user_profiles AS up
+              ON i.id = up.indexer_id
+            ORDER BY i.id DESC;
             "#
         )
         .fetch_all(self.borrow())

@@ -28,7 +28,7 @@ import {
 import { DatePicker, Select } from 'primevue'
 import { onMounted, ref } from 'vue'
 import { startOfWeek, endOfWeek } from 'date-fns'
-import { getIndexersLite, type IndexerLite } from '@/services/api/indexerService'
+import { getIndexersEnriched, type IndexerEnriched } from '@/services/api/indexerService'
 import { showToast } from '@/main'
 
 const emit = defineEmits<{
@@ -36,8 +36,8 @@ const emit = defineEmits<{
 }>()
 
 const loading = ref(false)
-const selectableIndexers = ref<IndexerLite[]>([])
-const selectedIndexer = ref<IndexerLite>()
+const selectableIndexers = ref<IndexerEnriched[]>([])
+const selectedIndexer = ref<IndexerEnriched>()
 const dateRange = ref<Date[]>([])
 const form = ref<GetUserStatsQuery>({
   date_from: '',
@@ -63,7 +63,7 @@ const fetchUserStats = async () => {
   }
 }
 onMounted(async () => {
-  const indexers = await getIndexersLite(true)
+  const indexers = await getIndexersEnriched(true)
   if (indexers.length === 0) {
     showToast('', 'No indexer with data available. Set them up in the settings', 'warn', 4000)
     return

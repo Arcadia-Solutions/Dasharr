@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use utoipa::ToSchema;
@@ -27,10 +28,12 @@ pub struct Indexer {
 }
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
-pub struct IndexerLite {
+pub struct IndexerEnriched {
     pub id: i32,
     pub enabled: bool,
     pub name: String,
+    #[schema(value_type = String, format = DateTime)]
+    pub last_scraped_at: Option<DateTime<Utc>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]

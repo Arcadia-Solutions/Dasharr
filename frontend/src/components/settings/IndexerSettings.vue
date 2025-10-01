@@ -14,9 +14,9 @@
 </template>
 <script lang="ts" setup>
 import {
-  type UpdatedIndexer,
   type AuthItem,
   editIndexer,
+  getIndexerAuthData,
   type Indexer,
 } from '@/services/api/indexerService'
 import { InputText, Button } from 'primevue'
@@ -24,25 +24,25 @@ import { Form } from '@primevue/forms'
 import { onMounted, ref } from 'vue'
 
 const props = defineProps<{
-  indexer: UpdatedIndexer
+  indexerId: number
 }>()
 
 const emit = defineEmits<{
-  indexerCreated: [Indexer]
+  indexerEdited: [Indexer]
 }>()
 
 const authData = ref<Record<string, AuthItem>>()
 
 const submit = () => {
   if (authData.value) {
-    editIndexer({ id: props.indexer.id, auth_data: authData.value }).then((indexer) =>
-      emit('indexerCreated', indexer),
+    editIndexer({ id: props.indexerId, auth_data: authData.value }).then((indexer) =>
+      emit('indexerEdited', indexer),
     )
   }
 }
 
 onMounted(() => {
-  authData.value = props.indexer.auth_data
+  getIndexerAuthData(props.indexerId).then((data) => (authData.value = data))
 })
 </script>
 <style scoped>

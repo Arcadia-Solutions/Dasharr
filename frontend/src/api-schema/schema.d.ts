@@ -20,15 +20,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/indexers/lite": {
+    "/api/indexers/enriched": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: operations["Get indexers lite"];
+        get: operations["Get indexers enriched"];
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/indexers/{id}/auth-data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Get indexer's auth data"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/indexers/{id}/toggle": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["Toggle indexer"];
         post?: never;
         delete?: never;
         options?: never;
@@ -93,10 +125,12 @@ export interface components {
             id: number;
             name: string;
         };
-        IndexerLite: {
+        IndexerEnriched: {
             enabled: boolean;
             /** Format: int32 */
             id: number;
+            /** Format: date-time */
+            last_scraped_at: string;
             name: string;
         };
         UpdatedIndexer: {
@@ -301,7 +335,7 @@ export interface operations {
             };
         };
     };
-    "Get indexers lite": {
+    "Get indexers enriched": {
         parameters: {
             query: {
                 only_with_available_data: boolean;
@@ -312,14 +346,59 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Successfully got the indexers (lite) */
+            /** @description Successfully got the indexers (enriched) */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["IndexerLite"][];
+                    "application/json": components["schemas"]["IndexerEnriched"][];
                 };
+            };
+        };
+    };
+    "Get indexer's auth data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully got the indexer's auth data */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: components["schemas"]["AuthItem"];
+                    };
+                };
+            };
+        };
+    };
+    "Toggle indexer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Indexer id */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully toggled the indexer */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

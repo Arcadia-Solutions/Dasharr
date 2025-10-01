@@ -2,7 +2,7 @@ CREATE TABLE indexers (
     id SERIAL PRIMARY KEY,
     enabled BOOLEAN NOT NULL DEFAULT FALSE,
     name TEXT UNIQUE NOT NULL,
-    auth_data JSONB NOT NULL DEFAULT '[]'
+    auth_data JSONB NOT NULL
 );
 
 INSERT INTO indexers (name, auth_data) VALUES
