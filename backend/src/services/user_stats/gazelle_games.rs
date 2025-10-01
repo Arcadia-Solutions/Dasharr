@@ -43,9 +43,9 @@ struct JsonPersonal {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct JsonCommunity {
-    posts: i32,
-    torrent_comments: i32,
-    collections: i32,
+    posts: Option<i32>,
+    torrent_comments: Option<i32>,
+    collections: Option<i32>,
     // collages_contrib: None,
     requests_filled: Option<i32>,
     requests_voted: Option<i32>,
@@ -88,9 +88,9 @@ impl From<UserProfileScrapedContent> for UserProfileScraped {
             paranoia_text: Some(wrapper.personal.paranoia_text),
             donor: Some(wrapper.personal.donor),
             warned: Some(wrapper.personal.warned),
-            posts: Some(wrapper.community.posts),
-            torrent_comments: Some(wrapper.community.torrent_comments),
-            collages_started: Some(wrapper.community.collections),
+            posts: Some(wrapper.community.posts.unwrap_or(0)),
+            torrent_comments: Some(wrapper.community.torrent_comments.unwrap_or(0)),
+            collages_started: Some(wrapper.community.collections.unwrap_or(0)),
             requests_filled: Some(wrapper.community.requests_filled.unwrap_or(0)),
             requests_voted: Some(wrapper.community.requests_voted.unwrap_or(0)),
             uploaded_torrents: Some(wrapper.community.uploaded_torrents.unwrap_or(0)),
