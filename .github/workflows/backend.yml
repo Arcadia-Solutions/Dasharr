@@ -1,0 +1,133 @@
+name: Backend CI
+
+on:
+  push:
+    paths:
+      - "backend/**"
+      - "!**.md" # In the case that markdown is going to be used for documentation, don't forget to change this ;)
+      - ".github/workflows/backend.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+      - "!**.md"
+      - ".github/workflows/backend.yml"
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: rust:1.89-bullseye
+
+    services:
+      arcadiadb:
+        image: postgres
+        env:
+          POSTGRES_USER: dasharr
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache-workspaces: ./backend
+
+      - name: Setup env
+        run: cp -f ./.env.ci .env
+
+      - name: Build
+        run: cargo build
+
+      - name: Run tests
+        run: cargo test
+
+  lint:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: clippy
+          cache-workspaces: ./
+
+      - name: Check clippy for new warnings
+        run: cargo clippy
+        env:
+          SQLX_OFFLINE: "true"
+
+  formatting:
+    name: cargo fmt
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: rustfmt
+          toolchain: 1.86
+          cache-workspaces: ./backend
+      - name: Rustfmt Check
+        run: cargo fmt --all -- --check
+
+  schema-check:
+    runs-on: ubuntu-latest
+    container: rust:1.89-bullseye
+    defaults:
+      run:
+        working-directory: ./backend/storage
+
+    services:
+      arcadiadb:
+        image: postgres
+        env:
+          POSTGRES_USER: dasharr
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      - name: Setup env
+        run: cp -f ./.env.ci .env
+
+      - name: Install sqlx
+        run: |
+          cargo install sqlx-cli
+          sqlx migrate run
+
+      - name: Ensure schema and query metadata are in sync
+        run: cargo sqlx prepare --check
