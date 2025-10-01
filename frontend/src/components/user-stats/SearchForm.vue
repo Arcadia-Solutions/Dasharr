@@ -1,30 +1,11 @@
 <template>
   <div class="line">
-    <DatePicker
-      v-model="dateRange"
-      selectionMode="range"
-      :manualInput="false"
-      showIcon
-      fluid
-      :showOnFocus="false"
-      @update:modelValue="fetchUserStats"
-    />
-    <Select
-      v-model="selectedIndexer"
-      :options="selectableIndexers"
-      filter
-      optionLabel="name"
-      placeholder="Select an indexer"
-      @change="fetchUserStats"
-    />
+    <DatePicker v-model="dateRange" selectionMode="range" :manualInput="false" showIcon fluid :showOnFocus="false" @update:modelValue="fetchUserStats" />
+    <Select v-model="selectedIndexer" :options="selectableIndexers" filter optionLabel="name" placeholder="Select an indexer" @change="fetchUserStats" />
   </div>
 </template>
 <script lang="ts" setup>
-import {
-  getUserStats,
-  type GetUserStatsQuery,
-  type UserProfileVec,
-} from '@/services/api/userStatsService'
+import { getUserStats, type GetUserStatsQuery, type UserProfileVec } from '@/services/api/userStatsService'
 import { DatePicker, Select } from 'primevue'
 import { onMounted, ref } from 'vue'
 import { startOfWeek, endOfWeek } from 'date-fns'
@@ -53,9 +34,7 @@ const fetchUserStats = async () => {
   if (selectedIndexer.value) {
     loading.value = true
     form.value.date_from = dateRange.value[0].toISOString().slice(0, -1)
-    form.value.date_to = new Date(dateRange.value[1].setHours(23, 59, 59, 999))
-      .toISOString()
-      .slice(0, -1)
+    form.value.date_to = new Date(dateRange.value[1].setHours(23, 59, 59, 999)).toISOString().slice(0, -1)
     form.value.indexer_id = selectedIndexer.value.id
     getUserStats(form.value)
       .then((data) => emit('gotResults', data))

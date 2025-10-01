@@ -13,12 +13,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import {
-  type AuthItem,
-  editIndexer,
-  getIndexerAuthData,
-  type Indexer,
-} from '@/services/api/indexerService'
+import { type AuthItem, editIndexer, getIndexerAuthData, type Indexer } from '@/services/api/indexerService'
 import { InputText, Button } from 'primevue'
 import { Form } from '@primevue/forms'
 import { onMounted, ref } from 'vue'
@@ -35,9 +30,7 @@ const authData = ref<Record<string, AuthItem>>()
 
 const submit = () => {
   if (authData.value) {
-    editIndexer({ id: props.indexerId, auth_data: authData.value }).then((indexer) =>
-      emit('indexerEdited', indexer),
-    )
+    editIndexer({ id: props.indexerId, auth_data: authData.value }).then((indexer) => emit('indexerEdited', indexer))
   }
 }
 

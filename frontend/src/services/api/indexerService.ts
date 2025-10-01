@@ -25,12 +25,6 @@ export const getIndexers = async (): Promise<Indexer[]> => {
   return (await api.get<Indexer[]>('/indexers')).data
 }
 
-export const getIndexersEnriched = async (
-  only_with_available_data: boolean,
-): Promise<IndexerEnriched[]> => {
-  return (
-    await api.get<IndexerEnriched[]>(
-      `/indexers/enriched?only_with_available_data=${only_with_available_data}`,
-    )
-  ).data
+export const getIndexersEnriched = async (only_with_available_data: boolean): Promise<IndexerEnriched[]> => {
+  return (await api.get<IndexerEnriched[]>(`/indexers/enriched?only_with_available_data=${only_with_available_data}`)).data
 }

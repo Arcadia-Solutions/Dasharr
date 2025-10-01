@@ -12,21 +12,14 @@
           <div class="actions">
             <ToggleSwitch
               v-model="slotProps.data.enabled"
-              @update:modelValue="
-                (newVal: boolean) =>
-                  toggleIndexerEnabledStatus(newVal, slotProps.data.id, slotProps.data.name)
-              "
+              @update:modelValue="(newVal: boolean) => toggleIndexerEnabledStatus(newVal, slotProps.data.id, slotProps.data.name)"
             />
             <Button icon="pi pi-pencil" size="small" @click="editIndexer(slotProps.data.id)" />
           </div>
         </template>
       </Column>
       <Dialog v-model:visible="indexerSettingsDialogVisible" @hide="indexerIdBeingEdited = null">
-        <IndexerSettings
-          v-if="indexerIdBeingEdited !== null"
-          :indexerId="indexerIdBeingEdited"
-          @indexer-edited="indexerEdited"
-        />
+        <IndexerSettings v-if="indexerIdBeingEdited !== null" :indexerId="indexerIdBeingEdited" @indexer-edited="indexerEdited" />
       </Dialog>
     </DataTable>
     <div class="wrapper-center" style="margin-top: 15px">
@@ -44,11 +37,7 @@
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import { ToggleSwitch, Button, Dialog } from 'primevue'
-import {
-  toggleIndexer,
-  getIndexersEnriched,
-  type IndexerEnriched,
-} from '@/services/api/indexerService'
+import { toggleIndexer, getIndexersEnriched, type IndexerEnriched } from '@/services/api/indexerService'
 import { onMounted, ref } from 'vue'
 import IndexerSettings from './IndexerSettings.vue'
 import { showToast } from '@/main'
@@ -68,18 +57,11 @@ const editIndexer = (indexerId: number) => {
 const toggleIndexerEnabledStatus = (newVal: boolean, id: number, name: string) => {
   toggleIndexer(id)
     .then(() => {
-      showToast(
-        '',
-        `Successfully ${newVal ? 'enabled' : 'disabled'} the indexer ${name}`,
-        'success',
-        2000,
-      )
+      showToast('', `Successfully ${newVal ? 'enabled' : 'disabled'} the indexer ${name}`, 'success', 2000)
     })
     .catch(() => {
       showToast('', `Error toggling the indexer ${name}`, 'error', 2000)
-      indexers.value = indexers.value.map((obj) =>
-        obj.id === id ? { ...obj, enabled: !obj.enabled } : obj,
-      )
+      indexers.value = indexers.value.map((obj) => (obj.id === id ? { ...obj, enabled: !obj.enabled } : obj))
     })
 }
 const indexerEdited = () => {

@@ -21,8 +21,7 @@ const props = defineProps<{
 
 const postProcessStat = (value: keyof UserProfileScrapedVec) => {
   let result: number | string =
-    ((props.userStats.profile[value]?.[props.userStats.profile[value].length - 1] as number) ?? 0) -
-    ((props.userStats.profile[value]?.[0] as number) ?? 0)
+    ((props.userStats.profile[value]?.[props.userStats.profile[value].length - 1] as number) ?? 0) - ((props.userStats.profile[value]?.[0] as number) ?? 0)
   switch (value) {
     case 'uploaded':
     case 'downloaded':

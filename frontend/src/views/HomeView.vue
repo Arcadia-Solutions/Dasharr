@@ -2,13 +2,7 @@
   <main style="width: 100%">
     <SearchForm @gotResults="gotResults" />
     <div class="wrapper-center">
-      <MultiSelect
-        v-model="selectedValues"
-        :options="displayableValues"
-        filter
-        display="chip"
-        placeholder="Charts to display"
-      />
+      <MultiSelect v-model="selectedValues" :options="displayableValues" filter display="chip" placeholder="Charts to display" />
     </div>
     <IndexerStatsOverview v-if="userStats" :userStats :selectedValues style="margin-top: 40px" />
     <IndexerStatsGraphs v-if="userStats" :userStats :selectedValues style="margin-top: 40px" />
