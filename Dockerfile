@@ -57,26 +57,20 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN cargo install sqlx-cli
 
-COPY --from=builder_backend /usr/local/bin/dasharr_backend /usr/local/bin
-
-COPY --from=builder_frontend /home/node/app/dist/ /usr/share/nginx/html
-COPY ./docker/nginx.conf /etc/nginx/nginx.conf
-
 COPY ./backend/migrations/ /migrations
 
 COPY ./docker/initdb.sh /
 RUN chmod +x /initdb.sh
 
+COPY --from=builder_backend /usr/local/bin/dasharr_backend /usr/local/bin
 
+COPY --from=builder_frontend /home/node/app/dist/ /usr/share/nginx/html
+COPY ./docker/nginx.conf /etc/nginx/nginx.conf
 
 # frontend
 EXPOSE 80
 # backend
 EXPOSE 8080
-# database
-EXPOSE 5432
-
-# ENTRYPOINT ["/usr/local/bin/dasharr_backend"]
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 

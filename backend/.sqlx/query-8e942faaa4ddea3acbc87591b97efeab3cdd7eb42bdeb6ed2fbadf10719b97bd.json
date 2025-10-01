@@ -1,0 +1,38 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT DISTINCT ON (i.id) i.id, i.name, i.enabled, up.scraped_at AS last_scraped_at\n            FROM indexers AS i\n            INNER JOIN user_profiles AS up\n              ON i.id = up.indexer_id\n            ORDER BY i.id DESC;\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "enabled",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 3,
+        "name": "last_scraped_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "8e942faaa4ddea3acbc87591b97efeab3cdd7eb42bdeb6ed2fbadf10719b97bd"
+}

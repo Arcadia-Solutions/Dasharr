@@ -1,0 +1,38 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                i.id,\n                i.name,\n                i.enabled,\n                MAX(up.scraped_at) AS last_scraped_at\n            FROM\n                indexers AS i\n            LEFT JOIN\n                user_profiles AS up ON up.indexer_id = i.id\n            GROUP BY\n                i.id, i.name, i.enabled\n            ORDER BY\n                i.id;\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "enabled",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 3,
+        "name": "last_scraped_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "613d1a6231ca427af8a9b341c2b593c1034d6c3363210e82208e84ca9c4ff27c"
+}
