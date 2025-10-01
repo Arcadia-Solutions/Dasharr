@@ -62,7 +62,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./
+        working-directory: ./backend
 
     steps:
       - uses: actions/checkout@v4
@@ -99,7 +99,7 @@ jobs:
     container: rust:1.89-bullseye
     defaults:
       run:
-        working-directory: ./backend/storage
+        working-directory: ./backend
 
     services:
       dasharrdb:
