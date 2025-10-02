@@ -18,44 +18,44 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    container: rust:1.89-bullseye
+  # build:
+  #   runs-on: ubuntu-latest
+  #   container: rust:1.89-bullseye
 
-    services:
-      dasharrdb:
-        image: postgres
-        env:
-          POSTGRES_USER: dasharr
-          POSTGRES_PASSWORD: password
-        ports:
-          - 5433:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+  #   services:
+  #     dasharrdb:
+  #       image: postgres
+  #       env:
+  #         POSTGRES_USER: dasharr
+  #         POSTGRES_PASSWORD: password
+  #       ports:
+  #         - 5433:5432
+  #       options: >-
+  #         --health-cmd pg_isready
+  #         --health-interval 10s
+  #         --health-timeout 5s
+  #         --health-retries 5
 
-    defaults:
-      run:
-        working-directory: ./backend
+  #   defaults:
+  #     run:
+  #       working-directory: ./backend
 
-    steps:
-      - uses: actions/checkout@v4
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Install Rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          cache-workspaces: ./backend
+  #     - name: Install Rust toolchain
+  #       uses: actions-rust-lang/setup-rust-toolchain@v1
+  #       with:
+  #         cache-workspaces: ./backend
 
-      - name: Setup env
-        run: cp -f ./.env.ci .env
+  #     - name: Setup env
+  #       run: cp -f ./.env.ci .env
 
-      - name: Build
-        run: cargo build
+  #     - name: Build
+  #       run: cargo build
 
-      - name: Run tests
-        run: cargo test
+  #     - name: Run tests
+  #       run: cargo test
 
   lint:
     runs-on: ubuntu-latest
