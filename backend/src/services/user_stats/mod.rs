@@ -1,3 +1,4 @@
+pub mod anthelion;
 pub mod broadcasthenet;
 pub mod gazelle_games;
 pub mod orpheus;
