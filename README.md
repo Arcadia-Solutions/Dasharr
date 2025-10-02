@@ -7,6 +7,17 @@ Dashboard of your indexers' usage
   </a>
 </p>
 
+![header](media/preview.png)
+
+## Why ?
+
+We often times don't realize the evolution of the stats on torrent indexers, this fixes it. Also :
+
+- see the impact of automated tools
+- see the impact of new uploads
+- have a clearer view of how much bounty can be spent on requests every n days
+- because it's cool
+
 ## Quickstart
 
 - Copy [compose.yml](./compose.yml)
@@ -14,3 +25,12 @@ Dashboard of your indexers' usage
 - Run dasharr: `docker compose up -d` (this will run the postgres database as well)
 - Visit the webui and configure the indexers that you want
 - New stats will be collected for the enabled indexers every 6h
+
+<details> <summary> <b> Supported indexers </b> </summary>
+
+* BTN
+* GGn
+* OPS
+* RED
+
+</details>
