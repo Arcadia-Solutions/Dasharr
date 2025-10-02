@@ -22,6 +22,11 @@
         "ordinal": 3,
         "name": "auth_data",
         "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 4,
+        "name": "error",
+        "type_info": "Text"
       }
     ],
     "parameters": {
@@ -34,7 +39,8 @@
       false,
       false,
       false,
-      false
+      false,
+      true
     ]
   },
   "hash": "c182285e2b4040418df783ae6f91fc678c90788ff868b85724268e7d9d4b156e"

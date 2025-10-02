@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n                SELECT * FROM indexers\n            ",
+  "query": "\n                UPDATE indexers\n                SET error = NULL\n                WHERE id NOT IN (SELECT unnest($1::int[]))\n                RETURNING *\n            ",
   "describe": {
     "columns": [
       {
@@ -30,7 +30,9 @@
       }
     ],
     "parameters": {
-      "Left": []
+      "Left": [
+        "Int4Array"
+      ]
     },
     "nullable": [
       false,
@@ -40,5 +42,5 @@
       true
     ]
   },
-  "hash": "520260783dc8cd21ad4e092a1c1f8c0747ac258e5bb5b0ddf920b0a6b1921cc1"
+  "hash": "21c23083645a385f6488a7cb1f8bfb210888eeb1c08c0538475067da933fdd0b"
 }

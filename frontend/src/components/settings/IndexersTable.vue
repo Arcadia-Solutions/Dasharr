@@ -1,8 +1,13 @@
 <template>
   <div>
     <DataTable :value="indexers">
+      <Column style="width: 0px; padding: 0px">
+        <template #body="slotProps">
+          <i class="pi pi-exclamation-triangle" v-if="slotProps.data.error" v-tooltip.top="slotProps.data.error" style="color: orange" />
+        </template>
+      </Column>
       <Column field="name" header="Name" />
-      <Column field="last_scraped_at" header="Last scraped">
+      <Column header="Last scraped">
         <template #body="slotProps">
           {{ timeAgo(slotProps.data.last_scraped_at) }}
         </template>

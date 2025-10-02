@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n                SELECT * FROM indexers\n            ",
+  "query": "\n                    UPDATE indexers\n                    SET error = $2\n                    WHERE id = $1\n                    RETURNING *\n                ",
   "describe": {
     "columns": [
       {
@@ -30,7 +30,10 @@
       }
     ],
     "parameters": {
-      "Left": []
+      "Left": [
+        "Int4",
+        "Text"
+      ]
     },
     "nullable": [
       false,
@@ -40,5 +43,5 @@
       true
     ]
   },
-  "hash": "520260783dc8cd21ad4e092a1c1f8c0747ac258e5bb5b0ddf920b0a6b1921cc1"
+  "hash": "bf1375d3033b9d4486b7c8231ffedd84c906d0264ca2ca7746dc32b637d0b930"
 }

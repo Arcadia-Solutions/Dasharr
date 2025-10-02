@@ -4,6 +4,7 @@ use crate::{
     connection_pool::ConnectionPool,
     error::{Error, Result},
     models::indexer::{Indexer, IndexerEnriched, UpdatedIndexer},
+    services::user_stats::scrape_indexers::ScraperError,
 };
 use std::borrow::Borrow;
 
@@ -22,7 +23,7 @@ impl ConnectionPool {
         )
         .fetch_one(self.borrow())
         .await
-        .map_err(Error::CouldNotCreateIndexer)?;
+        .map_err(Error::CouldNotUpdateIndexer)?;
 
         Ok(updated_indexer)
     }
@@ -63,6 +64,7 @@ impl ConnectionPool {
                 i.id,
                 i.name,
                 i.enabled,
+                i.error,
                 MAX(up.scraped_at) AS last_scraped_at
             FROM
                 indexers AS i
@@ -85,7 +87,7 @@ impl ConnectionPool {
         let indexers = sqlx::query_as!(
             IndexerEnriched,
             r#"
-            SELECT DISTINCT ON (i.id) i.id, i.name, i.enabled, up.scraped_at AS last_scraped_at
+            SELECT DISTINCT ON (i.id) i.id, i.name, i.enabled, i.error, up.scraped_at AS last_scraped_at
             FROM indexers AS i
             INNER JOIN user_profiles AS up
               ON i.id = up.indexer_id
@@ -113,5 +115,47 @@ impl ConnectionPool {
         .map_err(Error::CouldNotToggleIndexer)?;
 
         Ok(())
+    }
+
+    pub async fn update_indexers_status(&self, errors: &Vec<ScraperError>) -> Result<Vec<Indexer>> {
+        let mut updated_indexers = Vec::new();
+
+        for error in errors {
+            let updated_indexer = sqlx::query_as!(
+                Indexer,
+                r#"
+                    UPDATE indexers
+                    SET error = $2
+                    WHERE id = $1
+                    RETURNING *
+                "#,
+                error.indexer_id,
+                error.message,
+            )
+            .fetch_one(self.borrow())
+            .await
+            .map_err(Error::CouldNotUpdateIndexerStatus)?;
+
+            updated_indexers.push(updated_indexer);
+        }
+
+        let indexer_ids_with_errors: Vec<i32> = errors.iter().map(|e| e.indexer_id).collect();
+        let null_updated_indexers = sqlx::query_as!(
+            Indexer,
+            r#"
+                UPDATE indexers
+                SET error = NULL
+                WHERE id NOT IN (SELECT unnest($1::int[]))
+                RETURNING *
+            "#,
+            &indexer_ids_with_errors as &[i32],
+        )
+        .fetch_all(self.borrow())
+        .await
+        .map_err(Error::CouldNotUpdateIndexerStatus)?;
+
+        updated_indexers.extend(null_updated_indexers);
+
+        Ok(updated_indexers)
     }
 }

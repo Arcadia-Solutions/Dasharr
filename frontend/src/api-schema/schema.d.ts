@@ -121,12 +121,14 @@ export interface components {
                 [key: string]: components["schemas"]["AuthItem"];
             };
             enabled: boolean;
+            error?: string | null;
             /** Format: int32 */
             id: number;
             name: string;
         };
         IndexerEnriched: {
             enabled: boolean;
+            error?: string | null;
             /** Format: int32 */
             id: number;
             /** Format: date-time */

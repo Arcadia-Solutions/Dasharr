@@ -26,6 +26,7 @@ pub struct Indexer {
     pub name: String,
     #[schema(value_type = HashMap<String, AuthItem>)]
     pub auth_data: Value,
+    pub error: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
@@ -33,6 +34,7 @@ pub struct IndexerEnriched {
     pub id: i32,
     pub enabled: bool,
     pub name: String,
+    pub error: Option<String>,
     #[schema(value_type = String, format = DateTime)]
     pub last_scraped_at: Option<DateTime<Utc>>,
 }
@@ -48,23 +50,6 @@ pub struct UpdatedIndexer {
 pub trait Scraper {
     async fn scrape(&self, indexer: Indexer) -> Result<UserProfileScraped>;
 }
-
-#[derive(Debug)]
-pub enum ScraperError {
-    ScraperNotFound(String),
-}
-
-impl std::fmt::Display for ScraperError {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self {
-            ScraperError::ScraperNotFound(name) => {
-                write!(f, "scraper not found for name: {}", name)
-            }
-        }
-    }
-}
-
-impl std::error::Error for ScraperError {}
 
 impl Indexer {
     pub async fn scrape(self) -> Result<UserProfileScraped> {

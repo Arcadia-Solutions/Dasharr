@@ -1,13 +1,15 @@
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("could not create indexer")]
-    CouldNotCreateIndexer(#[source] sqlx::Error),
+    CouldNotUpdateIndexer(#[source] sqlx::Error),
     #[error("could not toggle indexer")]
     CouldNotToggleIndexer(#[source] sqlx::Error),
     #[error("could not get indexers")]
     CouldNotGetIndexers(#[source] sqlx::Error),
     #[error("could not get indexer's auth data")]
     CouldNotGetIndexerAuthData(#[source] sqlx::Error),
+    #[error("could not update indexer status")]
+    CouldNotUpdateIndexerStatus(#[source] sqlx::Error),
     #[error("could not insert stats: {0}")]
     CouldNotInsertStats(String),
     #[error("error scraping indexer: {0}")]
