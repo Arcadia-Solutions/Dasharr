@@ -41,7 +41,7 @@ struct JsonRanks {
     bounty: i32,
     posts: i32,
     artists: i32,
-    overall: i32,
+    overall: f32,
 }
 
 #[derive(Debug, Deserialize)]

@@ -1,6 +1,6 @@
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("could not create indexer")]
+    #[error("could not update indexer")]
     CouldNotUpdateIndexer(#[source] sqlx::Error),
     #[error("could not toggle indexer")]
     CouldNotToggleIndexer(#[source] sqlx::Error),

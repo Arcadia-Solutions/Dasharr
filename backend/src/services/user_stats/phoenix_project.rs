@@ -9,13 +9,14 @@ use crate::{
     },
 };
 
-pub struct RedactedScraper;
+pub struct PhoenixProjectScraper;
 
+//------------- For action=user
 #[derive(Debug, Deserialize)]
-struct RedactedResponse {
+struct PhoenixProjectProfileResponse {
     response: Option<UserProfileScrapedContent>,
-    error: Option<String>,
     status: String,
+    error: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -39,7 +40,6 @@ struct JsonRanks {
     requests: i32,
     bounty: i32,
     posts: i32,
-    artists: i32,
     overall: f32,
 }
 
@@ -80,6 +80,47 @@ struct UserProfileScrapedContent {
     personal: JsonPersonal,
     community: JsonCommunity,
 }
+//------------- For action=user
+
+//------------- For action=index
+#[derive(Debug, Deserialize)]
+pub struct PhoenixProjectIndexResponse {
+    pub status: String,
+    pub error: Option<String>,
+    pub response: Option<Index>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Index {
+    // pub username: String,
+    // pub id: i64,
+    // pub authkey: String,
+    // pub passkey: String,
+    // pub notifications: Notifications,
+    pub userstats: UserStats,
+}
+
+// #[derive(Debug, Deserialize)]
+// #[serde(rename_all = "camelCase")]
+// pub struct Notifications {
+//     pub messages: i64,
+//     pub notifications: i64,
+//     pub new_announcement: bool,
+//     pub new_blog: bool,
+// }
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UserStats {
+    // pub uploaded: i64,
+    // pub downloaded: i64,
+    // pub ratio: f32,
+    // pub required_ratio: f32,
+    pub bonus_points: i64,
+    // pub bonus_points_per_hour: f32,
+    // pub class: String,
+}
+//------------- For action=index
 
 impl From<UserProfileScrapedContent> for UserProfileScraped {
     fn from(wrapper: UserProfileScrapedContent) -> Self {
@@ -96,7 +137,7 @@ impl From<UserProfileScrapedContent> for UserProfileScraped {
             rank_requests: Some(wrapper.ranks.requests),
             rank_bounty: Some(wrapper.ranks.bounty),
             rank_posts: Some(wrapper.ranks.posts),
-            rank_artists: Some(wrapper.ranks.artists),
+            rank_artists: None,
             rank_overall: Some(wrapper.ranks.overall),
             class: wrapper.personal.class,
             // paranoia: Some(wrapper.personal.paranoia),
@@ -121,50 +162,66 @@ impl From<UserProfileScrapedContent> for UserProfileScraped {
 }
 
 #[async_trait]
-impl Scraper for RedactedScraper {
+impl Scraper for PhoenixProjectScraper {
     async fn scrape(&self, indexer: Indexer) -> Result<UserProfileScraped> {
         let client = reqwest::Client::new();
+        let user_id = indexer
+            .auth_data
+            .get("user_id")
+            .ok_or("phoenix project user_id not found")
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
+            .get("value")
+            .ok_or("phoenix project user_id value not found")
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
+            .as_str()
+            .unwrap();
+        let api_key = indexer
+            .auth_data
+            .get("api_key")
+            .ok_or("phoenix project API key not found")
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
+            .get("value")
+            .ok_or("phoenix project API key value not found")
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
+            .as_str()
+            .unwrap();
         let res = client
             .get(format!(
-                "https://redacted.sh/ajax.php?action=user&id={}",
-                indexer
-                    .auth_data
-                    .get("user_id")
-                    .ok_or("redacted user_id not found")
-                    .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
-                    .get("value")
-                    .ok_or("redacted user_id value not found")
-                    .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
-                    .as_str()
-                    .unwrap()
+                "https://phoenixproject.app/ajax.php?action=user&id={}",
+                user_id
             ))
-            .header(
-                "Authorization",
-                indexer
-                    .auth_data
-                    .get("api_key")
-                    .ok_or("redacted API key not found")
-                    .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
-                    .get("value")
-                    .ok_or("redacted API key value not found")
-                    .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
-                    .as_str()
-                    .unwrap(),
-            )
+            .header("Authorization", api_key)
             .send()
             .await
             .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
-
         let body = res.text().await.unwrap();
-        let response = serde_json::from_str::<RedactedResponse>(&body)
-            .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
 
+        let response = serde_json::from_str::<PhoenixProjectProfileResponse>(&body)
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
         if response.status != "success" {
             return Err(Error::CouldNotScrapeIndexer(
                 response.error.unwrap_or(response.status),
             ));
         }
+        let mut profile: UserProfileScraped = response.response.unwrap().into();
 
-        Ok(response.response.unwrap().into())
+        // bonus points are only available on another endpoint
+        let res = client
+            .get("https://phoenixproject.app/ajax.php?action=index")
+            .header("Authorization", api_key)
+            .send()
+            .await
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
+        let body = res.text().await.unwrap();
+        let response = serde_json::from_str::<PhoenixProjectIndexResponse>(&body)
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
+        if response.status != "success" {
+            return Err(Error::CouldNotScrapeIndexer(
+                response.error.unwrap_or(response.status),
+            ));
+        }
+        profile.bonus_points = Some(response.response.unwrap().userstats.bonus_points);
+
+        Ok(profile)
     }
 }

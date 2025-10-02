@@ -21,7 +21,7 @@ pub struct UserProfileScraped {
     pub rank_bounty: Option<i32>,
     pub rank_posts: Option<i32>,
     pub rank_artists: Option<i32>,
-    pub rank_overall: Option<i32>,
+    pub rank_overall: Option<f32>,
     pub class: String,
     // pub paranoia: Option<i32>,
     pub paranoia_text: Option<String>,

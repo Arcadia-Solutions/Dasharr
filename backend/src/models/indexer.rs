@@ -9,7 +9,8 @@ use crate::{
     models::user_stats::UserProfileScraped,
     services::user_stats::{
         anthelion::AnthelionScraper, broadcasthenet::BroadcasthenetScraper,
-        gazelle_games::GazelleGamesScraper, orpheus::OrpheusScraper, redacted::RedactedScraper,
+        gazelle_games::GazelleGamesScraper, orpheus::OrpheusScraper,
+        phoenix_project::PhoenixProjectScraper, redacted::RedactedScraper,
     },
 };
 
@@ -73,6 +74,10 @@ impl Indexer {
             "Anthelion" => {
                 static ANTHELION_SCRAPER: AnthelionScraper = AnthelionScraper;
                 &ANTHELION_SCRAPER
+            }
+            "PhoenixProject" => {
+                static PHOENIX_PROJECT_SCRAPER: PhoenixProjectScraper = PhoenixProjectScraper;
+                &PHOENIX_PROJECT_SCRAPER
             }
             _ => {
                 return Err(Error::CouldNotScrapeIndexer(
