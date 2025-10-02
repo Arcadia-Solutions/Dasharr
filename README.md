@@ -1,6 +1,12 @@
 # Dasharr
 Dashboard of your indexers' usage
 
+<p align="center">
+  <a href="https://discord.gg/4vd7qAaFwX">
+    <img src="https://img.shields.io/badge/Discord-Chat-5865F2?logo=discord&logoColor=white" alt="Join Our Discord">
+  </a>
+</p>
+
 ## Quickstart
 
 - Copy [compose.yml](./compose.yml)
