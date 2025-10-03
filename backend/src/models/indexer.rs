@@ -10,7 +10,7 @@ use crate::{
     services::user_stats::{
         aither::AitherScraper, anime_bytes::AnimeBytesScraper, anthelion::AnthelionScraper,
         blutopia::BlutopiaScraper, broadcasthenet::BroadcasthenetScraper,
-        gazelle_games::GazelleGamesScraper, orpheus::OrpheusScraper,
+        gazelle_games::GazelleGamesScraper, lst::LSTScraper, orpheus::OrpheusScraper,
         phoenix_project::PhoenixProjectScraper, redacted::RedactedScraper,
     },
 };
@@ -91,6 +91,10 @@ impl Indexer {
             "Aither" => {
                 static AITHER_SCRAPER: AitherScraper = AitherScraper;
                 &AITHER_SCRAPER
+            }
+            "LST" => {
+                static LST_SCRAPER: LSTScraper = LSTScraper;
+                &LST_SCRAPER
             }
             _ => {
                 return Err(Error::CouldNotScrapeIndexer(

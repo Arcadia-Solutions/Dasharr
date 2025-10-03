@@ -34,6 +34,7 @@ We often times don't realize the evolution of the stats on torrent indexers, thi
 * BLU
 * BTN
 * GGn
+* LST
 * OPS
 * PhoenixProject
 * RED
