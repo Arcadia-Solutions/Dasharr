@@ -78,9 +78,13 @@ const fetchUserStats = async () => {
   }
 }
 const setDefaultForm = () => {
-  localStorage.setItem('defaultSelectedValues', JSON.stringify(selectedValues.value))
-  localStorage.setItem('defaultSelectedIndexer', JSON.stringify(selectedIndexer.value))
-  showToast('', 'Indexer and displayed values set as default', 'success', 3000)
+  if (!selectedIndexer.value) {
+    showToast('', 'Select an indexer first', 'error', 2000)
+  } else {
+    localStorage.setItem('defaultSelectedValues', JSON.stringify(selectedValues.value))
+    localStorage.setItem('defaultSelectedIndexerId', selectedIndexer.value.id.toString())
+    showToast('', 'Indexer and displayed values set as default', 'success', 3000)
+  }
 }
 onMounted(async () => {
   const indexers = await getIndexersEnriched(true)
@@ -95,9 +99,9 @@ onMounted(async () => {
     selectedValues.value = JSON.parse(defaultSelectedValues)
     emit('selectedValuesUpdated', selectedValues.value)
   }
-  const defaultSelectedIndexer = localStorage.getItem('defaultSelectedIndexer')
-  if (defaultSelectedIndexer) {
-    selectedIndexer.value = JSON.parse(defaultSelectedIndexer)
+  const defaultSelectedIndexerId = localStorage.getItem('defaultSelectedIndexerId')
+  if (defaultSelectedIndexerId) {
+    selectedIndexer.value = selectableIndexers.value.find((indexer) => indexer.id === parseInt(defaultSelectedIndexerId))
   } else {
     selectedIndexer.value = selectableIndexers.value[0]
   }
