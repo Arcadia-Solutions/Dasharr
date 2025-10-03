@@ -10,10 +10,10 @@ use crate::{
     services::helpers::bytes_from_size_string,
 };
 
-pub struct LSTScraper;
+pub struct OldToonsScraper;
 
 #[derive(Debug, Deserialize)]
-struct LSTResponse {
+struct OldToonsResponse {
     group: String,
     uploaded: String,
     downloaded: String,
@@ -23,8 +23,8 @@ struct LSTResponse {
     seedbonus: String,
 }
 
-impl From<LSTResponse> for UserProfileScraped {
-    fn from(wrapper: LSTResponse) -> Self {
+impl From<OldToonsResponse> for UserProfileScraped {
+    fn from(wrapper: OldToonsResponse) -> Self {
         UserProfileScraped {
             uploaded: bytes_from_size_string(&wrapper.uploaded),
             downloaded: bytes_from_size_string(&wrapper.downloaded),
@@ -39,19 +39,19 @@ impl From<LSTResponse> for UserProfileScraped {
 }
 
 #[async_trait]
-impl Scraper for LSTScraper {
+impl Scraper for OldToonsScraper {
     async fn scrape(&self, indexer: Indexer) -> Result<UserProfileScraped> {
         let client = reqwest::Client::new();
         let res = client
             .get(format!(
-                "https://lst.gg/api/user?api_token={}",
+                "https://oldtoons.world/api/user?api_token={}",
                 indexer
                     .auth_data
                     .get("api_key")
-                    .ok_or("LST API key not found")
+                    .ok_or("OTW API key not found")
                     .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
                     .get("value")
-                    .ok_or("LST API key value not found")
+                    .ok_or("OTW API key value not found")
                     .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
                     .as_str()
                     .unwrap()
@@ -61,7 +61,7 @@ impl Scraper for LSTScraper {
             .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
 
         let body = res.text().await.unwrap();
-        let response = serde_json::from_str::<LSTResponse>(&body).map_err(|e| {
+        let response = serde_json::from_str::<OldToonsResponse>(&body).map_err(|e| {
             Error::CouldNotScrapeIndexer(format!("Your api key is probably invalid. {}", e))
         })?;
 
