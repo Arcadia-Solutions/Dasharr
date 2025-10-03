@@ -40,16 +40,32 @@ const emit = defineEmits<{
 }>()
 
 const displayableValues = ref<(keyof UserProfileScrapedVec)[]>([
-  'downloaded',
   'uploaded',
+  'downloaded',
   'bonus_points',
-  'leeching',
+  'bonus_points_per_hour',
   'seeding',
-  'ratio',
-  'uploaded_torrents',
+  'leeching',
   'snatched',
-  'invited',
+  'ratio',
+  'required_ratio',
+  'rank_uploaded',
+  'rank_downloaded',
+  'rank_uploads',
+  'rank_requests',
+  'rank_bounty',
+  'rank_posts',
+  'rank_artists',
+  'rank_overall',
+  'posts',
   'torrent_comments',
+  'collages_started',
+  'collages_contrib',
+  'requests_filled',
+  'requests_voted',
+  'uploaded_torrents',
+  'groups',
+  'invited',
 ])
 const selectedValues = ref<(typeof displayableValues.value)[number][]>(['uploaded', 'downloaded'])
 const loading = ref(false)

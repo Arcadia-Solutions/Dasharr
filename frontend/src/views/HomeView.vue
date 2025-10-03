@@ -1,13 +1,13 @@
 <template>
   <main style="width: 100%">
     <SearchForm @gotResults="gotResults" @selectedValuesUpdated="(val) => (selectedValues = val)" />
-    <IndexerStatsOverview v-if="userStats" :userStats :selectedValues style="margin-top: 40px" />
-    <IndexerStatsGraphs v-if="userStats" :userStats :selectedValues style="margin-top: 40px" />
+    <IndexerStatsIncreases v-if="userStats" :userStats :selectedValues style="margin-top: 40px" />
+    <IndexerStatsEvolutions v-if="userStats" :userStats :selectedValues style="margin-top: 40px" />
   </main>
 </template>
 <script setup lang="ts">
-import IndexerStatsGraphs from '@/components/user-stats/IndexerStatsGraphs.vue'
-import IndexerStatsOverview from '@/components/user-stats/IndexerStatsOverview.vue'
+import IndexerStatsEvolutions from '@/components/user-stats/IndexerStatsEvolutions.vue'
+import IndexerStatsIncreases from '@/components/user-stats/IndexerStatsIncreases.vue'
 import SearchForm from '@/components/user-stats/SearchForm.vue'
 import type { UserProfileScrapedVec, UserProfileVec } from '@/services/api/userStatsService'
 import { ref } from 'vue'

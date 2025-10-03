@@ -116,6 +116,7 @@ impl From<UserProfileScrapedContent> for UserProfileScraped {
             snatched: Some(wrapper.community.snatched),
             invited: Some(wrapper.community.invited),
             bonus_points: None,
+            bonus_points_per_hour: None,
         }
     }
 }

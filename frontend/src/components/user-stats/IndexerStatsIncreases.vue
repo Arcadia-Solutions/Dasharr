@@ -36,10 +36,8 @@ const postProcessStat = (value: keyof UserProfileScrapedVec) => {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  > * {
-    margin: 0 5px;
-  }
   .item {
+    margin: 5px;
     display: flex;
     flex-direction: column;
     align-items: center;

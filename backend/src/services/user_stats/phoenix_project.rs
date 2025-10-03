@@ -117,7 +117,7 @@ pub struct UserStats {
     // pub ratio: f32,
     // pub required_ratio: f32,
     pub bonus_points: i64,
-    // pub bonus_points_per_hour: f32,
+    pub bonus_points_per_hour: f32,
     // pub class: String,
 }
 //------------- For action=index
@@ -157,6 +157,7 @@ impl From<UserProfileScrapedContent> for UserProfileScraped {
             snatched: Some(wrapper.community.snatched),
             invited: Some(wrapper.community.invited),
             bonus_points: None,
+            bonus_points_per_hour: None,
         }
     }
 }
@@ -220,7 +221,9 @@ impl Scraper for PhoenixProjectScraper {
                 response.error.unwrap_or(response.status),
             ));
         }
-        profile.bonus_points = Some(response.response.unwrap().userstats.bonus_points);
+        let index = response.response.unwrap();
+        profile.bonus_points = Some(index.userstats.bonus_points);
+        profile.bonus_points_per_hour = Some(index.userstats.bonus_points_per_hour);
 
         Ok(profile)
     }

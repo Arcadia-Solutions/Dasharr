@@ -100,6 +100,7 @@ impl From<UserProfileScrapedContent> for UserProfileScraped {
             snatched: Some(wrapper.community.snatched.unwrap_or(0)),
             invited: Some(wrapper.community.invited.unwrap_or(0)),
             bonus_points: Some(wrapper.stats.bonus_points.unwrap_or(0)),
+            bonus_points_per_hour: None,
             rank_artists: None,
             rank_bounty: None,
             rank_downloaded: None,

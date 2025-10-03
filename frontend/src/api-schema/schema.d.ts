@@ -12,7 +12,7 @@ export interface paths {
             cookie?: never;
         };
         get: operations["Get indexers"];
-        put: operations["Add indexer"];
+        put: operations["Edit indexer"];
         post?: never;
         delete?: never;
         options?: never;
@@ -154,6 +154,10 @@ export interface components {
              *     ` from a
              *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
             bonus_points: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            bonus_points_per_hour: (number | null)[];
             /** @description  a vector of `
              *     ` from a
              *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
@@ -313,7 +317,7 @@ export interface operations {
             };
         };
     };
-    "Add indexer": {
+    "Edit indexer": {
         parameters: {
             query?: never;
             header?: never;
