@@ -37,3 +37,9 @@ We often times don't realize the evolution of the stats on torrent indexers, thi
 * RED
 
 </details>
+
+## Want to help ?
+
+- Have a look at [CONTRIBUTING.md](./CONTRIBUTING.md)
+- Report issues you might have, suggest new features
+- Hop on the discord server and let's chat
