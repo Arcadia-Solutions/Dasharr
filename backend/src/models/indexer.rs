@@ -8,9 +8,10 @@ use crate::{
     error::{Error, Result},
     models::user_stats::UserProfileScraped,
     services::user_stats::{
-        anime_bytes::AnimeBytesScraper, anthelion::AnthelionScraper, blutopia::BlutopiaScraper,
-        broadcasthenet::BroadcasthenetScraper, gazelle_games::GazelleGamesScraper,
-        orpheus::OrpheusScraper, phoenix_project::PhoenixProjectScraper, redacted::RedactedScraper,
+        aither::AitherScraper, anime_bytes::AnimeBytesScraper, anthelion::AnthelionScraper,
+        blutopia::BlutopiaScraper, broadcasthenet::BroadcasthenetScraper,
+        gazelle_games::GazelleGamesScraper, orpheus::OrpheusScraper,
+        phoenix_project::PhoenixProjectScraper, redacted::RedactedScraper,
     },
 };
 
@@ -86,6 +87,10 @@ impl Indexer {
             "Blutopia" => {
                 static BLUTOPIA_SCRAPER: BlutopiaScraper = BlutopiaScraper;
                 &BLUTOPIA_SCRAPER
+            }
+            "Aither" => {
+                static AITHER_SCRAPER: AitherScraper = AitherScraper;
+                &AITHER_SCRAPER
             }
             _ => {
                 return Err(Error::CouldNotScrapeIndexer(

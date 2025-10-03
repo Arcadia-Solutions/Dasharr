@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n                SELECT * FROM indexers\n            ",
+  "query": "\n                SELECT * FROM indexers\n                ORDER BY name ASC\n            ",
   "describe": {
     "columns": [
       {
@@ -40,5 +40,5 @@
       true
     ]
   },
-  "hash": "520260783dc8cd21ad4e092a1c1f8c0747ac258e5bb5b0ddf920b0a6b1921cc1"
+  "hash": "7c229e31f3f9184bd6f0a0d99f86060eb9912d4f1c2020e5e87813d2e8f9a2db"
 }

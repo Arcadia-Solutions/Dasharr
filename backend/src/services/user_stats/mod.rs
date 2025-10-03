@@ -1,3 +1,4 @@
+pub mod aither;
 pub mod anime_bytes;
 pub mod anthelion;
 pub mod blutopia;

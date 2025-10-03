@@ -33,6 +33,7 @@ impl ConnectionPool {
             Indexer,
             r#"
                 SELECT * FROM indexers
+                ORDER BY name ASC
             "#
         )
         .fetch_all(self.borrow())
@@ -73,7 +74,7 @@ impl ConnectionPool {
             GROUP BY
                 i.id, i.name, i.enabled
             ORDER BY
-                i.id;
+                i.name ASC;
             "#
         )
         .fetch_all(self.borrow())
@@ -87,11 +88,11 @@ impl ConnectionPool {
         let indexers = sqlx::query_as!(
             IndexerEnriched,
             r#"
-            SELECT DISTINCT ON (i.id) i.id, i.name, i.enabled, i.error, up.scraped_at AS last_scraped_at
+            SELECT DISTINCT ON (i.name) i.id, i.name, i.enabled, i.error, up.scraped_at AS last_scraped_at
             FROM indexers AS i
             INNER JOIN user_profiles AS up
               ON i.id = up.indexer_id
-            ORDER BY i.id DESC;
+            ORDER BY i.name ASC;
             "#
         )
         .fetch_all(self.borrow())

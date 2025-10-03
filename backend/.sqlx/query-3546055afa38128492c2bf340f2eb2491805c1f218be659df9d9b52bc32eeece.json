@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT DISTINCT ON (i.id) i.id, i.name, i.enabled, i.error, up.scraped_at AS last_scraped_at\n            FROM indexers AS i\n            INNER JOIN user_profiles AS up\n              ON i.id = up.indexer_id\n            ORDER BY i.id DESC;\n            ",
+  "query": "\n            SELECT\n                i.id,\n                i.name,\n                i.enabled,\n                i.error,\n                MAX(up.scraped_at) AS last_scraped_at\n            FROM\n                indexers AS i\n            LEFT JOIN\n                user_profiles AS up ON up.indexer_id = i.id\n            GROUP BY\n                i.id, i.name, i.enabled\n            ORDER BY\n                i.name ASC;\n            ",
   "describe": {
     "columns": [
       {
@@ -37,8 +37,8 @@
       false,
       false,
       true,
-      false
+      null
     ]
   },
-  "hash": "592f642edd7fbfe0c75e37af4f0172f2aaceaaf4c32f9606a496b93e0066d469"
+  "hash": "3546055afa38128492c2bf340f2eb2491805c1f218be659df9d9b52bc32eeece"
 }
