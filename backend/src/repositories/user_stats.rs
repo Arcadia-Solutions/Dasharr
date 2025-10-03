@@ -22,10 +22,10 @@ impl ConnectionPool {
                         rank_requests, rank_bounty, rank_posts, rank_artists, rank_overall,
                         paranoia_text, warned, posts, torrent_comments, collages_started, collages_contrib,
                         requests_filled, requests_voted, uploaded_torrents, groups, snatched, invited, bonus_points,
-                        bonus_points_per_hour
+                        bonus_points_per_hour, uploaded_real, downloaded_real, seed_size, average_seed_time
                     )
                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,
-                    $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32)
+                    $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36)
                     "#,
                 profile.indexer_id,
                 profile.profile.avatar,
@@ -60,6 +60,10 @@ impl ConnectionPool {
                 profile.profile.invited,
                 profile.profile.bonus_points,
                 profile.profile.bonus_points_per_hour,
+                profile.profile.uploaded_real,
+                profile.profile.downloaded_real,
+                profile.profile.seed_size,
+                profile.profile.average_seed_time,
             )
             // .execute(&mut *tx)
             .execute(self.borrow())

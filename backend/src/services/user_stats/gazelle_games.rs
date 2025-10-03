@@ -110,6 +110,10 @@ impl From<UserProfileScrapedContent> for UserProfileScraped {
             rank_uploaded: None,
             rank_uploads: None,
             collages_contrib: None,
+            uploaded_real: None,
+            downloaded_real: None,
+            seed_size: None,
+            average_seed_time: None,
         }
     }
 }

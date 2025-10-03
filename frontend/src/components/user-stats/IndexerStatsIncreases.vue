@@ -25,6 +25,9 @@ const postProcessStat = (value: keyof UserProfileScrapedVec) => {
   switch (value) {
     case 'uploaded':
     case 'downloaded':
+    case 'seed_size':
+    case 'uploaded_real':
+    case 'downloaded_real':
       result = bytesToReadable(result)
       break
   }

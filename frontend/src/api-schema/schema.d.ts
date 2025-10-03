@@ -153,6 +153,10 @@ export interface components {
             /** @description  a vector of `
              *     ` from a
              *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            average_seed_time: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
             bonus_points: (number | null)[];
             /** @description  a vector of `
              *     ` from a
@@ -178,6 +182,10 @@ export interface components {
              *     ` from a
              *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
             downloaded: number[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            downloaded_real: (number | null)[];
             /** @description  a vector of `
              *     ` from a
              *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
@@ -249,6 +257,10 @@ export interface components {
             /** @description  a vector of `
              *     ` from a
              *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            seed_size: (number | null)[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
             seeding: (number | null)[];
             /** @description  a vector of `
              *     ` from a
@@ -262,6 +274,10 @@ export interface components {
              *     ` from a
              *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
             uploaded: number[];
+            /** @description  a vector of `
+             *     ` from a
+             *     [`UserProfileScraped`](struct.UserProfileScraped.html) */
+            uploaded_real: (number | null)[];
             /** @description  a vector of `
              *     ` from a
              *     [`UserProfileScraped`](struct.UserProfileScraped.html) */

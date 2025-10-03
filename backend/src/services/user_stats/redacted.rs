@@ -117,6 +117,10 @@ impl From<UserProfileScrapedContent> for UserProfileScraped {
             invited: Some(wrapper.community.invited),
             bonus_points: None,
             bonus_points_per_hour: None,
+            uploaded_real: None,
+            downloaded_real: None,
+            seed_size: None,
+            average_seed_time: None,
         }
     }
 }

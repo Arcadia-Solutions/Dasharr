@@ -11,7 +11,9 @@ pub struct UserProfileScraped {
     // #[schema(value_type = String, format = DateTime)]
     // pub last_access: NaiveDateTime,
     pub uploaded: i64,
+    pub uploaded_real: Option<i64>,
     pub downloaded: i64,
+    pub downloaded_real: Option<i64>,
     pub ratio: f32,
     pub required_ratio: Option<f32>,
     pub rank_uploaded: Option<i32>,
@@ -41,6 +43,8 @@ pub struct UserProfileScraped {
     pub invited: Option<i32>,
     pub bonus_points: Option<i64>,
     pub bonus_points_per_hour: Option<f32>,
+    pub seed_size: Option<i64>,
+    pub average_seed_time: Option<i64>,
 }
 
 #[derive(Debug, Default, Deserialize, Serialize, FromRow, StructOfArray, ToSchema)]

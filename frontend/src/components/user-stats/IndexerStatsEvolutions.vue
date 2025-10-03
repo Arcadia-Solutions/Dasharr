@@ -25,6 +25,9 @@ const chartOptions = (value: keyof UserProfileScrapedVec) => {
   switch (value) {
     case 'uploaded':
     case 'downloaded':
+    case 'seed_size':
+    case 'uploaded_real':
+    case 'downloaded_real':
       unit = 'GiB'
       break
   }
@@ -51,7 +54,10 @@ const chartData = (value: keyof UserProfileScrapedVec) => {
   switch (value) {
     case 'uploaded':
     case 'downloaded':
-      data = props.userStats.profile[value].map((val) => val / 1024 / 1024 / 1024)
+    case 'seed_size':
+    case 'uploaded_real':
+    case 'downloaded_real':
+      data = props.userStats.profile[value].map((val) => (val ?? 0) / 1024 / 1024 / 1024)
       break
     default:
       data = props.userStats.profile[value] as number[]
