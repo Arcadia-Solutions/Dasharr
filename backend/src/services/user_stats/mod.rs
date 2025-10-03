@@ -1,5 +1,6 @@
 pub mod anime_bytes;
 pub mod anthelion;
+pub mod blutopia;
 pub mod broadcasthenet;
 pub mod gazelle_games;
 pub mod orpheus;
