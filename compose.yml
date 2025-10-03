@@ -21,7 +21,6 @@ services:
     image: ghcr.io/arcadia-solutions/dasharr:latest
     ports:
       - 3000:80
-      - 3001:8080
     environment:
       - ENV=Docker
     env_file:

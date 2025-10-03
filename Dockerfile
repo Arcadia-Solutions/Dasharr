@@ -67,10 +67,10 @@ COPY --from=builder_backend /usr/local/bin/dasharr_backend /usr/local/bin
 COPY --from=builder_frontend /home/node/app/dist/ /usr/share/nginx/html
 COPY ./docker/nginx.conf /etc/nginx/nginx.conf
 
-# frontend
+# frontend and backend
+# nginx redirects the requests to the proper place
+# /api will redirect to the backend, otherwise it'll be the frontend
 EXPOSE 80
-# backend
-EXPOSE 8080
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
