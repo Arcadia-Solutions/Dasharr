@@ -39,6 +39,7 @@ You can then visit the frontend at `http://localhost:3000` and the swagger at `h
 * GGn
 * ITT
 * LST
+* MAM
 * OE
 * OPS
 * OTW

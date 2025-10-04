@@ -8,6 +8,7 @@ pub mod fear_no_peer;
 pub mod gazelle_games;
 pub mod ita_torrents;
 pub mod lst;
+pub mod myanonamouse;
 pub mod oldtoons;
 pub mod only_encodes;
 pub mod orpheus;

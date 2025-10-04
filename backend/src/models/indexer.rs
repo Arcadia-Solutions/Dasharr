@@ -11,8 +11,8 @@ use crate::{
         aither::AitherScraper, anime_bytes::AnimeBytesScraper, anthelion::AnthelionScraper,
         blutopia::BlutopiaScraper, broadcasthenet::BroadcasthenetScraper,
         fear_no_peer::FearNoPeerScraper, gazelle_games::GazelleGamesScraper,
-        ita_torrents::ItaTorrentsScraper, lst::LSTScraper, oldtoons::OldToonsScraper,
-        only_encodes::OnlyEncodesScraper, orpheus::OrpheusScraper,
+        ita_torrents::ItaTorrentsScraper, lst::LSTScraper, myanonamouse::MyAnonamouseScraper,
+        oldtoons::OldToonsScraper, only_encodes::OnlyEncodesScraper, orpheus::OrpheusScraper,
         phoenix_project::PhoenixProjectScraper, redacted::RedactedScraper,
         reel_flix::ReelFlixScraper, seed_pool::SeedPoolScraper, upload_cx::UploadCXScraper,
         yu_scene::YuSceneScraper,
@@ -135,6 +135,10 @@ impl Indexer {
             "FearNoPeer" => {
                 static FEAR_NO_PEER_SCRAPER: FearNoPeerScraper = FearNoPeerScraper;
                 &FEAR_NO_PEER_SCRAPER
+            }
+            "MyAnonamouse" => {
+                static MY_ANONAMOUSE_SCRAPER: MyAnonamouseScraper = MyAnonamouseScraper;
+                &MY_ANONAMOUSE_SCRAPER
             }
             _ => {
                 return Err(Error::CouldNotScrapeIndexer(
