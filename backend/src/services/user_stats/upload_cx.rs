@@ -13,8 +13,11 @@ pub struct UploadCXScraper;
 
 #[async_trait]
 impl Scraper for UploadCXScraper {
-    async fn scrape(&self, indexer: Indexer) -> Result<UserProfileScraped> {
-        let client = reqwest::Client::new();
+    async fn scrape(
+        &self,
+        indexer: Indexer,
+        client: &reqwest::Client,
+    ) -> Result<UserProfileScraped> {
         let res = client
             .get(format!(
                 "https://upload.cx/api/user?api_token={}",
@@ -29,7 +32,6 @@ impl Scraper for UploadCXScraper {
                     .as_str()
                     .unwrap()
             ))
-            .header("User-Agent", "dasharr")
             .send()
             .await
             .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;

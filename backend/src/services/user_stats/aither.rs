@@ -13,8 +13,11 @@ pub struct AitherScraper;
 
 #[async_trait]
 impl Scraper for AitherScraper {
-    async fn scrape(&self, indexer: Indexer) -> Result<UserProfileScraped> {
-        let client = reqwest::Client::new();
+    async fn scrape(
+        &self,
+        indexer: Indexer,
+        client: &reqwest::Client,
+    ) -> Result<UserProfileScraped> {
         let res = client
             .get(format!(
                 "https://aither.cc/api/user?api_token={}",

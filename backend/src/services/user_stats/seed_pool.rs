@@ -13,8 +13,11 @@ pub struct SeedPoolScraper;
 
 #[async_trait]
 impl Scraper for SeedPoolScraper {
-    async fn scrape(&self, indexer: Indexer) -> Result<UserProfileScraped> {
-        let client = reqwest::Client::new();
+    async fn scrape(
+        &self,
+        indexer: Indexer,
+        client: &reqwest::Client,
+    ) -> Result<UserProfileScraped> {
         let res = client
             .get(format!(
                 "https://seedpool.org/api/user?api_token={}",

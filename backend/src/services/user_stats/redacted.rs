@@ -127,8 +127,11 @@ impl From<UserProfileScrapedContent> for UserProfileScraped {
 
 #[async_trait]
 impl Scraper for RedactedScraper {
-    async fn scrape(&self, indexer: Indexer) -> Result<UserProfileScraped> {
-        let client = reqwest::Client::new();
+    async fn scrape(
+        &self,
+        indexer: Indexer,
+        client: &reqwest::Client,
+    ) -> Result<UserProfileScraped> {
         let res = client
             .get(format!(
                 "https://redacted.sh/ajax.php?action=user&id={}",

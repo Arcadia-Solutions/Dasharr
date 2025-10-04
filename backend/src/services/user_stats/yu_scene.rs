@@ -13,8 +13,11 @@ pub struct YuSceneScraper;
 
 #[async_trait]
 impl Scraper for YuSceneScraper {
-    async fn scrape(&self, indexer: Indexer) -> Result<UserProfileScraped> {
-        let client = reqwest::Client::new();
+    async fn scrape(
+        &self,
+        indexer: Indexer,
+        client: &reqwest::Client,
+    ) -> Result<UserProfileScraped> {
         let res = client
             .get(format!(
                 "https://yu-scene.net/api/user?api_token={}",

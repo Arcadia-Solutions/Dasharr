@@ -120,8 +120,11 @@ impl From<UserProfileScrapedContent> for UserProfileScraped {
 
 #[async_trait]
 impl Scraper for GazelleGamesScraper {
-    async fn scrape(&self, indexer: Indexer) -> Result<UserProfileScraped> {
-        let client = reqwest::Client::new();
+    async fn scrape(
+        &self,
+        indexer: Indexer,
+        client: &reqwest::Client,
+    ) -> Result<UserProfileScraped> {
         let res = client
             .get(format!(
                 "https://gazellegames.net/api.php?request=user&id={}",

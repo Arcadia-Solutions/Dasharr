@@ -168,8 +168,11 @@ impl From<UserProfileScrapedContent> for UserProfileScraped {
 
 #[async_trait]
 impl Scraper for PhoenixProjectScraper {
-    async fn scrape(&self, indexer: Indexer) -> Result<UserProfileScraped> {
-        let client = reqwest::Client::new();
+    async fn scrape(
+        &self,
+        indexer: Indexer,
+        client: &reqwest::Client,
+    ) -> Result<UserProfileScraped> {
         let user_id = indexer
             .auth_data
             .get("user_id")

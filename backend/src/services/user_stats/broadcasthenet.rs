@@ -69,8 +69,11 @@ struct BroadcasthenetRequestBody {
 
 #[async_trait]
 impl Scraper for BroadcasthenetScraper {
-    async fn scrape(&self, indexer: Indexer) -> Result<UserProfileScraped> {
-        let client = reqwest::Client::new();
+    async fn scrape(
+        &self,
+        indexer: Indexer,
+        client: &reqwest::Client,
+    ) -> Result<UserProfileScraped> {
         let res = client
             .post("https://api.broadcasthe.net/")
             .json(&BroadcasthenetRequestBody {

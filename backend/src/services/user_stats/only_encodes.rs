@@ -13,8 +13,11 @@ pub struct OnlyEncodesScraper;
 
 #[async_trait]
 impl Scraper for OnlyEncodesScraper {
-    async fn scrape(&self, indexer: Indexer) -> Result<UserProfileScraped> {
-        let client = reqwest::Client::new();
+    async fn scrape(
+        &self,
+        indexer: Indexer,
+        client: &reqwest::Client,
+    ) -> Result<UserProfileScraped> {
         let res = client
             .get(format!(
                 "https://onlyencodes.cc/api/user?api_token={}",

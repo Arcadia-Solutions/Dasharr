@@ -9,10 +9,10 @@ use crate::{
     services::user_stats::common::unit3d::UnitedResponse,
 };
 
-pub struct OldToonsScraper;
+pub struct FearNoPeerScraper;
 
 #[async_trait]
-impl Scraper for OldToonsScraper {
+impl Scraper for FearNoPeerScraper {
     async fn scrape(
         &self,
         indexer: Indexer,
@@ -20,14 +20,14 @@ impl Scraper for OldToonsScraper {
     ) -> Result<UserProfileScraped> {
         let res = client
             .get(format!(
-                "https://oldtoons.world/api/user?api_token={}",
+                "https://fearnopeer.com/api/user?api_token={}",
                 indexer
                     .auth_data
                     .get("api_key")
-                    .ok_or("OTW API key not found")
+                    .ok_or("FNP API key not found")
                     .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
                     .get("value")
-                    .ok_or("OTW API key value not found")
+                    .ok_or("FNP API key value not found")
                     .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
                     .as_str()
                     .unwrap()

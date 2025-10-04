@@ -10,8 +10,9 @@ use crate::{
     services::user_stats::{
         aither::AitherScraper, anime_bytes::AnimeBytesScraper, anthelion::AnthelionScraper,
         blutopia::BlutopiaScraper, broadcasthenet::BroadcasthenetScraper,
-        gazelle_games::GazelleGamesScraper, ita_torrents::ItaTorrentsScraper, lst::LSTScraper,
-        oldtoons::OldToonsScraper, only_encodes::OnlyEncodesScraper, orpheus::OrpheusScraper,
+        fear_no_peer::FearNoPeerScraper, gazelle_games::GazelleGamesScraper,
+        ita_torrents::ItaTorrentsScraper, lst::LSTScraper, oldtoons::OldToonsScraper,
+        only_encodes::OnlyEncodesScraper, orpheus::OrpheusScraper,
         phoenix_project::PhoenixProjectScraper, redacted::RedactedScraper,
         reel_flix::ReelFlixScraper, seed_pool::SeedPoolScraper, upload_cx::UploadCXScraper,
         yu_scene::YuSceneScraper,
@@ -53,7 +54,11 @@ pub struct UpdatedIndexer {
 
 #[async_trait]
 pub trait Scraper {
-    async fn scrape(&self, indexer: Indexer) -> Result<UserProfileScraped>;
+    async fn scrape(
+        &self,
+        indexer: Indexer,
+        client: &reqwest::Client,
+    ) -> Result<UserProfileScraped>;
 }
 
 impl Indexer {
@@ -127,6 +132,10 @@ impl Indexer {
                 static UPLOAD_CX_SCRAPER: UploadCXScraper = UploadCXScraper;
                 &UPLOAD_CX_SCRAPER
             }
+            "FearNoPeer" => {
+                static FEAR_NO_PEER_SCRAPER: FearNoPeerScraper = FearNoPeerScraper;
+                &FEAR_NO_PEER_SCRAPER
+            }
             _ => {
                 return Err(Error::CouldNotScrapeIndexer(
                     "indexer has no scraper".into(),
@@ -134,7 +143,9 @@ impl Indexer {
             }
         };
 
-        let profile = scraper_ref.scrape(self).await?; //.map_err(|e| Error::CouldNotScrapeIndexer(format!("{}", e.into())))?;
+        let profile = scraper_ref
+            .scrape(self, &crate::services::HTTP_CLIENT)
+            .await?;
         Ok(profile)
     }
 }
