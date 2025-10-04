@@ -43,6 +43,22 @@ impl ConnectionPool {
         Ok(indexers)
     }
 
+    pub async fn find_indexer_by_name(&self, name: &str) -> Result<Indexer> {
+        let indexer = sqlx::query_as!(
+            Indexer,
+            r#"
+                SELECT * FROM indexers
+                WHERE name = $1
+            "#,
+            name
+        )
+        .fetch_one(self.borrow())
+        .await
+        .map_err(Error::CouldNotGetIndexers)?;
+
+        Ok(indexer)
+    }
+
     pub async fn find_indexer_auth_data(&self, id: i32) -> Result<Value> {
         let auth_data_record = sqlx::query!(
             r#"

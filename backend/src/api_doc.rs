@@ -13,6 +13,7 @@ use crate::handlers::user_stats::get_user_stats::GetUserStatsQuery;
         crate::handlers::indexers::toggle_indexer::exec,
         crate::handlers::user_stats::scrape_user_stats::exec,
         crate::handlers::user_stats::get_user_stats::exec,
+        crate::handlers::user_stats::get_user_stats_prometheus::exec,
     ),
     components(schemas(GetUserStatsQuery),)
 )]

@@ -26,6 +26,8 @@ We often times don't realize the evolution of the stats on torrent indexers, thi
 - Visit the webui and configure the indexers that you want
 - New stats will be collected for the enabled indexers every 6h
 
+You can then visit the frontend at `http://localhost:3000` and the swagger at `http://localhost:3000/swagger-ui/#/`.
+
 <details> <summary> <b> Supported indexers </b> </summary>
 
 * AB
