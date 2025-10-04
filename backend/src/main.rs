@@ -8,8 +8,6 @@ use envconfig::Envconfig;
 use std::{env, sync::Arc};
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
-// use utoipa::OpenApi;
-// use utoipa_swagger_ui::SwaggerUi;
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {

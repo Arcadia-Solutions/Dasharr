@@ -39,38 +39,7 @@ const emit = defineEmits<{
   selectedValuesUpdated: [(keyof UserProfileScrapedVec)[]]
 }>()
 
-const displayableValues = ref<(keyof UserProfileScrapedVec)[]>([
-  'uploaded',
-  'downloaded',
-  'bonus_points',
-  'bonus_points_per_hour',
-  'seeding',
-  'leeching',
-  'snatched',
-  'ratio',
-  'seed_size',
-  'average_seed_time',
-  'uploaded_real',
-  'downloaded_real',
-  'required_ratio',
-  'rank_uploaded',
-  'rank_downloaded',
-  'rank_uploads',
-  'rank_requests',
-  'rank_bounty',
-  'rank_posts',
-  'rank_artists',
-  'rank_overall',
-  'posts',
-  'torrent_comments',
-  'collages_started',
-  'collages_contrib',
-  'requests_filled',
-  'requests_voted',
-  'uploaded_torrents',
-  'groups',
-  'invited',
-])
+const displayableValues = ref<(keyof UserProfileScrapedVec)[]>([])
 const selectedValues = ref<(typeof displayableValues.value)[number][]>(['uploaded', 'downloaded'])
 const loading = ref(false)
 const selectableIndexers = ref<IndexerEnriched[]>([])
@@ -93,7 +62,17 @@ const fetchUserStats = async () => {
     form.value.date_to = new Date(dateRange.value[1].setHours(23, 59, 59, 999)).toISOString().slice(0, -1)
     form.value.indexer_id = selectedIndexer.value.id
     getUserStats(form.value)
-      .then((data) => emit('gotResults', data))
+      .then((data) => {
+        emit('gotResults', data)
+        displayableValues.value = (Object.keys(data.profile) as (keyof UserProfileScrapedVec)[]).filter(
+          // @ts-expect-error TODO: fix error .at() doesn't exist
+          (key) => data.profile[key] && data.profile[key].length > 0 && data.profile[key].at(-1) !== null,
+        )
+        displayableValues.value.splice(displayableValues.value.indexOf('avatar'), 1)
+        displayableValues.value.splice(displayableValues.value.indexOf('class'), 1)
+        selectedValues.value = selectedValues.value.filter((val) => displayableValues.value.includes(val))
+        emit('selectedValuesUpdated', selectedValues.value)
+      })
       .finally(() => (loading.value = false))
   }
 }
