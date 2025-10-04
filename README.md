@@ -28,7 +28,7 @@ We often times don't realize the evolution of the stats on torrent indexers, thi
 
 You can then visit the frontend at `http://localhost:3000` and the swagger at `http://localhost:3000/swagger-ui/#/`.
 
-<details> <summary> <b> Supported indexers </b> </summary>
+## Supported indexers
 
 * AB
 * ANT
@@ -36,14 +36,13 @@ You can then visit the frontend at `http://localhost:3000` and the swagger at `h
 * BLU
 * BTN
 * GGn
+* ITT
 * LST
 * OPS
 * OTW
 * PhoenixProject
 * RED
 * ReelFlix
-
-</details>
 
 ## Want to help ?
 

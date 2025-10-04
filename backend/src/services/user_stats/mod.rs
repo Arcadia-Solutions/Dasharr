@@ -5,6 +5,7 @@ pub mod blutopia;
 pub mod broadcasthenet;
 pub mod common;
 pub mod gazelle_games;
+pub mod ita_torrents;
 pub mod lst;
 pub mod oldtoons;
 pub mod orpheus;
