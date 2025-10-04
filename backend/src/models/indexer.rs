@@ -12,6 +12,7 @@ use crate::{
         blutopia::BlutopiaScraper, broadcasthenet::BroadcasthenetScraper,
         gazelle_games::GazelleGamesScraper, lst::LSTScraper, oldtoons::OldToonsScraper,
         orpheus::OrpheusScraper, phoenix_project::PhoenixProjectScraper, redacted::RedactedScraper,
+        reel_flix::ReelFlixScraper,
     },
 };
 
@@ -99,6 +100,10 @@ impl Indexer {
             "OldToons" => {
                 static OLD_TOONS_SCRAPER: OldToonsScraper = OldToonsScraper;
                 &OLD_TOONS_SCRAPER
+            }
+            "ReelFlix" => {
+                static REEL_FLIX_SCRAPER: ReelFlixScraper = ReelFlixScraper;
+                &REEL_FLIX_SCRAPER
             }
             _ => {
                 return Err(Error::CouldNotScrapeIndexer(

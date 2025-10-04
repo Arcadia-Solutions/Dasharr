@@ -10,4 +10,5 @@ pub mod oldtoons;
 pub mod orpheus;
 pub mod phoenix_project;
 pub mod redacted;
+pub mod reel_flix;
 pub mod scrape_indexers;
