@@ -24,7 +24,8 @@ async fn main() -> std::io::Result<()> {
 
     let arc = Data::new(Dasharr::new(Arc::clone(&pool), env.clone()));
 
-    let server_url = "127.0.0.1:8080".to_string();
+    let web_server_port = env::var("WEB_SERVER_PORT").expect("WEB_SERVER_PORT must be set");
+    let server_url = format!("127.0.0.1:{web_server_port}").to_string();
     println!("Server running at http://{server_url}");
 
     let server = HttpServer::new(move || {
