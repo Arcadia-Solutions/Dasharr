@@ -38,11 +38,13 @@ You can then visit the frontend at `http://localhost:3000` and the swagger at `h
 * GGn
 * ITT
 * LST
+* OE
 * OPS
 * OTW
 * PhoenixProject
 * RED
 * ReelFlix
+* SP
 
 ## Want to help ?
 

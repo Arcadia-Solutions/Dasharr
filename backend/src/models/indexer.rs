@@ -11,8 +11,9 @@ use crate::{
         aither::AitherScraper, anime_bytes::AnimeBytesScraper, anthelion::AnthelionScraper,
         blutopia::BlutopiaScraper, broadcasthenet::BroadcasthenetScraper,
         gazelle_games::GazelleGamesScraper, ita_torrents::ItaTorrentsScraper, lst::LSTScraper,
-        oldtoons::OldToonsScraper, orpheus::OrpheusScraper, phoenix_project::PhoenixProjectScraper,
-        redacted::RedactedScraper, reel_flix::ReelFlixScraper,
+        oldtoons::OldToonsScraper, only_encodes::OnlyEncodesScraper, orpheus::OrpheusScraper,
+        phoenix_project::PhoenixProjectScraper, redacted::RedactedScraper,
+        reel_flix::ReelFlixScraper, seed_pool::SeedPoolScraper,
     },
 };
 
@@ -108,6 +109,14 @@ impl Indexer {
             "ItaTorrents" => {
                 static ITA_TORRENTS_SCRAPER: ItaTorrentsScraper = ItaTorrentsScraper;
                 &ITA_TORRENTS_SCRAPER
+            }
+            "OnlyEncodes" => {
+                static ONLY_ENCODES_SCRAPER: OnlyEncodesScraper = OnlyEncodesScraper;
+                &ONLY_ENCODES_SCRAPER
+            }
+            "SeedPool" => {
+                static SEED_POOL_SCRAPER: SeedPoolScraper = SeedPoolScraper;
+                &SEED_POOL_SCRAPER
             }
             _ => {
                 return Err(Error::CouldNotScrapeIndexer(
