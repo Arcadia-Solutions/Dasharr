@@ -25,5 +25,6 @@ import IndexersTable from '@/components/settings/IndexersTable.vue'
 <style scoped>
 #settings {
   width: 100%;
+  margin-bottom: 20px;
 }
 </style>
