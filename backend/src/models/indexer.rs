@@ -13,7 +13,7 @@ use crate::{
         gazelle_games::GazelleGamesScraper, ita_torrents::ItaTorrentsScraper, lst::LSTScraper,
         oldtoons::OldToonsScraper, only_encodes::OnlyEncodesScraper, orpheus::OrpheusScraper,
         phoenix_project::PhoenixProjectScraper, redacted::RedactedScraper,
-        reel_flix::ReelFlixScraper, seed_pool::SeedPoolScraper,
+        reel_flix::ReelFlixScraper, seed_pool::SeedPoolScraper, yu_scene::YuSceneScraper,
     },
 };
 
@@ -117,6 +117,10 @@ impl Indexer {
             "SeedPool" => {
                 static SEED_POOL_SCRAPER: SeedPoolScraper = SeedPoolScraper;
                 &SEED_POOL_SCRAPER
+            }
+            "YuScene" => {
+                static YU_SCENE_SCRAPER: YuSceneScraper = YuSceneScraper;
+                &YU_SCENE_SCRAPER
             }
             _ => {
                 return Err(Error::CouldNotScrapeIndexer(

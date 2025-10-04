@@ -15,3 +15,4 @@ pub mod redacted;
 pub mod reel_flix;
 pub mod scrape_indexers;
 pub mod seed_pool;
+pub mod yu_scene;
