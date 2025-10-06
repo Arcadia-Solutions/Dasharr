@@ -43,6 +43,10 @@ COPY ./frontend .
 
 RUN --mount=type=cache,target=/root/.npm \
     npm ci --verbose --no-audit
+
+# don't include any frontend custom config
+RUN rm -f .env
+
 # This should be npm run build
 RUN npx vite build
 
@@ -50,17 +54,8 @@ FROM debian:bookworm-slim AS runtime
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y libssl-dev openssl curl pkg-config ca-certificates nginx postgresql tini gcc
-
-# install sqlx-cli to handle database migrations
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
-RUN cargo install sqlx-cli
-
-COPY ./backend/migrations/ /migrations
-
-COPY ./docker/initdb.sh /
-RUN chmod +x /initdb.sh
+RUN apt-get update && apt-get install --no-install-recommends -y libssl-dev openssl curl pkg-config ca-certificates nginx tini
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder_backend /usr/local/bin/dasharr_backend /usr/local/bin
 
@@ -75,7 +70,6 @@ EXPOSE 80
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 CMD ["sh", "-c", "\
-    cd / && /initdb.sh && \
     cd /usr/local/bin/ && ./dasharr_backend & \
     nginx -g 'daemon off;' & \
     wait"]

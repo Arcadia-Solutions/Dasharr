@@ -5,6 +5,8 @@ use dasharr::{
     scheduler::run_periodic_tasks,
 };
 use envconfig::Envconfig;
+use std::borrow::Borrow;
+use std::ops::Deref;
 use std::{env, sync::Arc};
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
@@ -21,6 +23,11 @@ async fn main() -> std::io::Result<()> {
             .await
             .expect("db connection couldn't be established"),
     );
+
+    sqlx::migrate!("./migrations")
+        .run(pool.deref().borrow())
+        .await
+        .expect("Failed to run database migrations!");
 
     let arc = Data::new(Dasharr::new(Arc::clone(&pool), env.clone()));
 

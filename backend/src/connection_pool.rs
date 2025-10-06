@@ -1,5 +1,8 @@
 use sqlx::{PgPool, postgres::PgPoolOptions};
-use std::borrow::{Borrow, BorrowMut};
+use std::{
+    borrow::{Borrow, BorrowMut},
+    ops::Deref,
+};
 
 pub struct ConnectionPool(PgPool);
 
@@ -28,5 +31,12 @@ impl Borrow<PgPool> for ConnectionPool {
 impl BorrowMut<PgPool> for ConnectionPool {
     fn borrow_mut(&mut self) -> &mut PgPool {
         &mut self.0
+    }
+}
+
+impl Deref for ConnectionPool {
+    type Target = PgPool;
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }
