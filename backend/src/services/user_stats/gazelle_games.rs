@@ -22,8 +22,10 @@ struct GazelleGamesResponse {
 #[serde(rename_all = "camelCase")]
 struct JsonStats {
     // last_access: NaiveDateTime,
-    uploaded: i64,
-    downloaded: i64,
+    uploaded: Option<i64>,
+    downloaded: Option<i64>,
+    #[serde(rename = "fullDownloaded")]
+    downloaded_real: Option<i64>,
     ratio: String,
     required_ratio: Option<String>,
     #[serde(rename = "gold")]
@@ -72,8 +74,8 @@ impl From<UserProfileScrapedContent> for UserProfileScraped {
         UserProfileScraped {
             avatar: wrapper.avatar,
             // last_access: wrapper.stats.last_access,
-            uploaded: wrapper.stats.uploaded,
-            downloaded: wrapper.stats.downloaded,
+            uploaded: wrapper.stats.uploaded.unwrap_or(0),
+            downloaded: wrapper.stats.downloaded.unwrap_or(0),
             ratio: wrapper.stats.ratio.parse().unwrap_or(0.0),
             required_ratio: Some(
                 wrapper
@@ -111,7 +113,7 @@ impl From<UserProfileScrapedContent> for UserProfileScraped {
             rank_uploads: None,
             collages_contrib: None,
             uploaded_real: None,
-            downloaded_real: None,
+            downloaded_real: Some(wrapper.stats.downloaded_real.unwrap_or(0)),
             seed_size: None,
             average_seed_time: None,
         }
