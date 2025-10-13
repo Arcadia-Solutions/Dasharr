@@ -14,6 +14,8 @@ pub enum Error {
     CouldNotInsertStats(String),
     #[error("error scraping indexer: {0}")]
     CouldNotScrapeIndexer(String),
+    #[error("could not deserialize value: {0}")]
+    CouldNotDeserializeValue(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

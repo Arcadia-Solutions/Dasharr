@@ -1,5 +1,6 @@
 use async_trait::async_trait;
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer, de::Visitor};
+use std::fmt;
 
 use crate::{
     error::{Error, Result},
@@ -16,8 +17,45 @@ pub struct MyAnonamouseResponse {
     pub classname: String,
     pub uploaded_bytes: i64,
     pub downloaded_bytes: i64,
+    #[serde(deserialize_with = "deserialize_ratio")]
     pub ratio: f32,
     pub seedbonus: i64,
+}
+
+struct RatioVisitor;
+
+impl<'de> Visitor<'de> for RatioVisitor {
+    type Value = f32;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("an f32 or the character '∞'")
+    }
+
+    fn visit_f64<E>(self, v: f64) -> std::result::Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        Ok(v as f32)
+    }
+
+    fn visit_str<E>(self, v: &str) -> std::result::Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        if v == "∞" {
+            Ok(f32::MAX)
+        } else {
+            v.parse::<f32>()
+                .map_err(|_| E::custom(format!("Expected an f32 or '∞', found: {}", v)))
+        }
+    }
+}
+
+fn deserialize_ratio<'de, D>(deserializer: D) -> std::result::Result<f32, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    deserializer.deserialize_any(RatioVisitor)
 }
 
 impl From<MyAnonamouseResponse> for UserProfileScraped {
@@ -62,7 +100,10 @@ impl Scraper for MyAnonamouseScraper {
             .await
             .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
 
-        let body = res.text().await.unwrap();
+        let body = res
+            .text()
+            .await
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
         let response = serde_json::from_str::<MyAnonamouseResponse>(&body).map_err(|e| {
             Error::CouldNotScrapeIndexer(format!("Your mam id is probably invalid. {}", e))
         })?;
