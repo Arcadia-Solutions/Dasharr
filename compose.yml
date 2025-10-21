@@ -1,7 +1,7 @@
 services:
   db:
     container_name: dasharr_db
-    image: postgres
+    image: postgres:18.0
     restart: always
     shm_size: 128mb
     volumes:
