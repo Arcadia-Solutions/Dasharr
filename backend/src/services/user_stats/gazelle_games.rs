@@ -27,7 +27,7 @@ struct JsonStats {
     #[serde(rename = "fullDownloaded")]
     downloaded_real: Option<i64>,
     ratio: String,
-    required_ratio: Option<String>,
+    required_ratio: Option<f32>,
     #[serde(rename = "gold")]
     bonus_points: Option<i64>,
 }
@@ -77,14 +77,7 @@ impl From<UserProfileScrapedContent> for UserProfileScraped {
             uploaded: wrapper.stats.uploaded.unwrap_or(0),
             downloaded: wrapper.stats.downloaded.unwrap_or(0),
             ratio: wrapper.stats.ratio.parse().unwrap_or(0.0),
-            required_ratio: Some(
-                wrapper
-                    .stats
-                    .required_ratio
-                    .unwrap_or("0.0".to_string())
-                    .parse()
-                    .unwrap_or(0.0),
-            ),
+            required_ratio: wrapper.stats.required_ratio,
             class: wrapper.personal.class,
             // paranoia: Some(wrapper.personal.paranoia),
             paranoia_text: Some(wrapper.personal.paranoia_text),
