@@ -48,6 +48,7 @@ You can then visit the frontend at `http://localhost:3000` and the swagger at `h
 * ReelFlix
 * SP
 * ULCX
+* YOiNKED
 * YUS
 
 ## Want to help ?
