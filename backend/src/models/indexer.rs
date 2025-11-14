@@ -139,7 +139,7 @@ impl Indexer {
             "MyAnonamouse" => {
                 static MY_ANONAMOUSE_SCRAPER: MyAnonamouseScraper = MyAnonamouseScraper;
                 &MY_ANONAMOUSE_SCRAPER
-            },
+            }
             "Yoinked" => {
                 static YOINKED_SCRAPER: YoinkedScraper = YoinkedScraper;
                 &YOINKED_SCRAPER
