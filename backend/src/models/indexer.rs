@@ -10,9 +10,10 @@ use crate::{
     services::user_stats::{
         aither::AitherScraper, anime_bytes::AnimeBytesScraper, anthelion::AnthelionScraper,
         blutopia::BlutopiaScraper, broadcasthenet::BroadcasthenetScraper,
-        fear_no_peer::FearNoPeerScraper, gazelle_games::GazelleGamesScraper,
-        ita_torrents::ItaTorrentsScraper, lst::LSTScraper, myanonamouse::MyAnonamouseScraper,
-        oldtoons::OldToonsScraper, only_encodes::OnlyEncodesScraper, orpheus::OrpheusScraper,
+        darkpeers::DarkPeersScraper, fear_no_peer::FearNoPeerScraper,
+        gazelle_games::GazelleGamesScraper, ita_torrents::ItaTorrentsScraper, lst::LSTScraper,
+        myanonamouse::MyAnonamouseScraper, oldtoons::OldToonsScraper,
+        only_encodes::OnlyEncodesScraper, orpheus::OrpheusScraper,
         phoenix_project::PhoenixProjectScraper, redacted::RedactedScraper,
         reel_flix::ReelFlixScraper, seed_pool::SeedPoolScraper, upload_cx::UploadCXScraper,
         yoinked::YoinkedScraper, yu_scene::YuSceneScraper,
@@ -143,6 +144,10 @@ impl Indexer {
             "Yoinked" => {
                 static YOINKED_SCRAPER: YoinkedScraper = YoinkedScraper;
                 &YOINKED_SCRAPER
+            }
+            "DarkPeers" => {
+                static DARKPEERS_SCRAPER: DarkPeersScraper = DarkPeersScraper;
+                &DARKPEERS_SCRAPER
             }
             _ => {
                 return Err(Error::CouldNotScrapeIndexer(
