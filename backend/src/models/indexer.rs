@@ -14,8 +14,8 @@ use crate::{
         ita_torrents::ItaTorrentsScraper, lst::LSTScraper, myanonamouse::MyAnonamouseScraper,
         oldtoons::OldToonsScraper, only_encodes::OnlyEncodesScraper, orpheus::OrpheusScraper,
         phoenix_project::PhoenixProjectScraper, redacted::RedactedScraper,
-        reel_flix::ReelFlixScraper, seed_pool::SeedPoolScraper, upload_cx::UploadCXScraper,
-        yu_scene::YuSceneScraper,
+        reel_flix::ReelFlixScraper, seed_pool::SeedPoolScraper, speedapp::SpeedappScraper,
+        upload_cx::UploadCXScraper, yu_scene::YuSceneScraper,
     },
 };
 
@@ -139,6 +139,10 @@ impl Indexer {
             "MyAnonamouse" => {
                 static MY_ANONAMOUSE_SCRAPER: MyAnonamouseScraper = MyAnonamouseScraper;
                 &MY_ANONAMOUSE_SCRAPER
+            }
+            "SpeedApp" => {
+                static SPEED_APP_SCRAPER: SpeedappScraper = SpeedappScraper;
+                &SPEED_APP_SCRAPER
             }
             _ => {
                 return Err(Error::CouldNotScrapeIndexer(
