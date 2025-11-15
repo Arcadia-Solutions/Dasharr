@@ -41,11 +41,16 @@ impl From<SpeedappResponse> for UserProfileScraped {
     fn from(wrapper: SpeedappResponse) -> Self {
         let uploaded = wrapper.uploaded.unwrap_or(0);
         let downloaded = wrapper.downloaded.unwrap_or(0);
+        let ratio = if downloaded == 0 && uploaded > 0 {
+            f32::MAX
+        } else {
+            uploaded as f32 / downloaded as f32
+        };
 
         UserProfileScraped {
             uploaded: uploaded,
             downloaded: downloaded,
-            ratio: (uploaded as f32 / downloaded as f32),
+            ratio: ratio,
             // class: wrapper.class.unwrap_or(0).to_string(),
             donor: wrapper.is_donor,
             warned: wrapper.warned,
