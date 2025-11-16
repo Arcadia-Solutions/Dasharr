@@ -29,7 +29,7 @@ struct SpeedappResponse {
     // invites: Option<i64>,
     // timezone: Option<String>,
     // hit_and_run_count: Option<i64>,
-    // snatch_count: Option<i64>,
+    snatch_count: Option<i32>,
     // need_seed: Option<i64>,
     average_seed_time: Option<i64>,
     // locale: Option,
@@ -55,6 +55,7 @@ impl From<SpeedappResponse> for UserProfileScraped {
             donor: wrapper.is_donor,
             warned: wrapper.warned,
             average_seed_time: wrapper.average_seed_time,
+            snatched: wrapper.snatch_count,
             ..Default::default()
         }
     }
