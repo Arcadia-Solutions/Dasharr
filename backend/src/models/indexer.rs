@@ -14,9 +14,9 @@ use crate::{
         gazelle_games::GazelleGamesScraper, ita_torrents::ItaTorrentsScraper, lst::LSTScraper,
         myanonamouse::MyAnonamouseScraper, oldtoons::OldToonsScraper,
         only_encodes::OnlyEncodesScraper, orpheus::OrpheusScraper,
-        phoenix_project::PhoenixProjectScraper, redacted::RedactedScraper,
-        reel_flix::ReelFlixScraper, seed_pool::SeedPoolScraper, upload_cx::UploadCXScraper,
-        yoinked::YoinkedScraper, yu_scene::YuSceneScraper,
+        phoenix_project::PhoenixProjectScraper, rastastugan::RastastuganScraper,
+        redacted::RedactedScraper, reel_flix::ReelFlixScraper, seed_pool::SeedPoolScraper,
+        upload_cx::UploadCXScraper, yoinked::YoinkedScraper, yu_scene::YuSceneScraper,
     },
 };
 
@@ -148,6 +148,10 @@ impl Indexer {
             "DarkPeers" => {
                 static DARKPEERS_SCRAPER: DarkPeersScraper = DarkPeersScraper;
                 &DARKPEERS_SCRAPER
+            }
+            "Rastastugan" => {
+                static RASTASTUGAN_SCRAPER: RastastuganScraper = RastastuganScraper;
+                &RASTASTUGAN_SCRAPER
             }
             _ => {
                 return Err(Error::CouldNotScrapeIndexer(
