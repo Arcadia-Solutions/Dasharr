@@ -11,12 +11,13 @@ use crate::{
         aither::AitherScraper, anime_bytes::AnimeBytesScraper, anthelion::AnthelionScraper,
         blutopia::BlutopiaScraper, broadcasthenet::BroadcasthenetScraper,
         darkpeers::DarkPeersScraper, fear_no_peer::FearNoPeerScraper,
-        gazelle_games::GazelleGamesScraper, ita_torrents::ItaTorrentsScraper, lst::LSTScraper,
-        myanonamouse::MyAnonamouseScraper, oldtoons::OldToonsScraper,
-        only_encodes::OnlyEncodesScraper, orpheus::OrpheusScraper,
-        phoenix_project::PhoenixProjectScraper, redacted::RedactedScraper,
-        reel_flix::ReelFlixScraper, seed_pool::SeedPoolScraper, speedapp::SpeedappScraper,
-        upload_cx::UploadCXScraper, yoinked::YoinkedScraper, yu_scene::YuSceneScraper,
+        gazelle_games::GazelleGamesScraper, homiehelpdesk::HomieHelpDeskScraper,
+        ita_torrents::ItaTorrentsScraper, lst::LSTScraper, myanonamouse::MyAnonamouseScraper,
+        oldtoons::OldToonsScraper, only_encodes::OnlyEncodesScraper, orpheus::OrpheusScraper,
+        phoenix_project::PhoenixProjectScraper, rastastugan::RastastuganScraper,
+        redacted::RedactedScraper, reel_flix::ReelFlixScraper, seed_pool::SeedPoolScraper,
+        speedapp::SpeedappScraper, upload_cx::UploadCXScraper, yoinked::YoinkedScraper,
+        yu_scene::YuSceneScraper,
     },
 };
 
@@ -148,6 +149,14 @@ impl Indexer {
             "DarkPeers" => {
                 static DARKPEERS_SCRAPER: DarkPeersScraper = DarkPeersScraper;
                 &DARKPEERS_SCRAPER
+            }
+            "Rastastugan" => {
+                static RASTASTUGAN_SCRAPER: RastastuganScraper = RastastuganScraper;
+                &RASTASTUGAN_SCRAPER
+            }
+            "HomieHelpDesk" => {
+                static HOMIE_HELP_DESK_SCRAPER: HomieHelpDeskScraper = HomieHelpDeskScraper;
+                &HOMIE_HELP_DESK_SCRAPER
             }
             "SpeedApp" => {
                 static SPEED_APP_SCRAPER: SpeedappScraper = SpeedappScraper;
