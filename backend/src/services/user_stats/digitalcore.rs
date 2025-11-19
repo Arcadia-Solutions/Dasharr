@@ -95,11 +95,11 @@ impl Scraper for DigitalCoreScraper {
             .collect::<Vec<&str>>()[0];
 
         let res = client
-            .get(format!("https://digitalcore.club/api/v1/users/{}", uid_cookie))
-            .header(
-                "Cookie",
-                cookies
-            )
+            .get(format!(
+                "https://digitalcore.club/api/v1/users/{}",
+                uid_cookie
+            ))
+            .header("Cookie", cookies)
             .send()
             .await
             .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
