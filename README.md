@@ -36,6 +36,7 @@ You can then visit the frontend at `http://localhost:3000` and the swagger at `h
 * BLU
 * BTN
 * DarkPeers
+* DigitalCore
 * FNP
 * GGn
 * HomieHelpDesk

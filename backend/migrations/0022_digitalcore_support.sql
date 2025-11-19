@@ -1,0 +1,2 @@
+INSERT INTO indexers (name, auth_data) VALUES
+('DigitalCore', '{"cookies": {"value": "", "explanation": "1) Log in to this tracker. 2) Open up the DevTools. 3) Navigate to the Network tab. 4) Click on the Doc button (Chrome Browser) or HTML button (FireFox). 5) Refresh the page by pressing F5. 6) Click on the first row entry. 7) Select the Headers tab on the Right panel. 8) Find ''cookie:'' in the Request Headers section. 9) Copy the value and paste it here."}}');

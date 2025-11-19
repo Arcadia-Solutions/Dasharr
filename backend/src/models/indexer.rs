@@ -10,10 +10,11 @@ use crate::{
     services::user_stats::{
         aither::AitherScraper, anime_bytes::AnimeBytesScraper, anthelion::AnthelionScraper,
         blutopia::BlutopiaScraper, broadcasthenet::BroadcasthenetScraper,
-        darkpeers::DarkPeersScraper, fear_no_peer::FearNoPeerScraper,
-        gazelle_games::GazelleGamesScraper, homiehelpdesk::HomieHelpDeskScraper,
-        ita_torrents::ItaTorrentsScraper, lst::LSTScraper, myanonamouse::MyAnonamouseScraper,
-        oldtoons::OldToonsScraper, only_encodes::OnlyEncodesScraper, orpheus::OrpheusScraper,
+        darkpeers::DarkPeersScraper, digitalcore::DigitalCoreScraper,
+        fear_no_peer::FearNoPeerScraper, gazelle_games::GazelleGamesScraper,
+        homiehelpdesk::HomieHelpDeskScraper, ita_torrents::ItaTorrentsScraper, lst::LSTScraper,
+        myanonamouse::MyAnonamouseScraper, oldtoons::OldToonsScraper,
+        only_encodes::OnlyEncodesScraper, orpheus::OrpheusScraper,
         phoenix_project::PhoenixProjectScraper, rastastugan::RastastuganScraper,
         redacted::RedactedScraper, reel_flix::ReelFlixScraper, seed_pool::SeedPoolScraper,
         upload_cx::UploadCXScraper, yoinked::YoinkedScraper, yu_scene::YuSceneScraper,
@@ -156,6 +157,10 @@ impl Indexer {
             "HomieHelpDesk" => {
                 static HOMIE_HELP_DESK_SCRAPER: HomieHelpDeskScraper = HomieHelpDeskScraper;
                 &HOMIE_HELP_DESK_SCRAPER
+            }
+            "DigitalCore" => {
+                static DIGITAL_CORE_SCRAPER: DigitalCoreScraper = DigitalCoreScraper;
+                &DIGITAL_CORE_SCRAPER
             }
             _ => {
                 return Err(Error::CouldNotScrapeIndexer(
