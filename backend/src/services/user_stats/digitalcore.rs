@@ -67,35 +67,38 @@ impl Scraper for DigitalCoreScraper {
         indexer: Indexer,
         client: &reqwest::Client,
     ) -> Result<UserProfileScraped> {
-        let user_id = indexer
+        let cookies = indexer
             .auth_data
-            .get("user_id")
-            .ok_or("DigitalCore user_id not found.")
+            .get("cookies")
+            .ok_or("DigitalCore cookies not found.")
             .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
             .get("value")
-            .ok_or("DigitalCore user_id value not found")
+            .ok_or("DigitalCore cookies not found.")
             .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
             .as_str()
             .unwrap();
 
+        if !cookies.contains("uid=") {
+            return Err(Error::CouldNotScrapeIndexer(
+                "Cannot find cookie for 'uid'.".to_string(),
+            ));
+        }
+
+        if !cookies.contains("pass=") {
+            return Err(Error::CouldNotScrapeIndexer(
+                "Cannot find cookie for 'pass'.".to_string(),
+            ));
+        }
+
+        let uid_cookie = cookies.split("uid=").collect::<Vec<&str>>()[1]
+            .split(";")
+            .collect::<Vec<&str>>()[0];
+
         let res = client
-            .get(format!("https://digitalcore.club/api/v1/users/{}", user_id))
+            .get(format!("https://digitalcore.club/api/v1/users/{}", uid_cookie))
             .header(
                 "Cookie",
-                format!(
-                    "uid={}; pass={}",
-                    user_id,
-                    indexer
-                        .auth_data
-                        .get("pass_cookie")
-                        .ok_or("DigitalCore pass cookie not found.")
-                        .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
-                        .get("value")
-                        .ok_or("DigitalCore pass cookie value not found")
-                        .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
-                        .as_str()
-                        .unwrap()
-                ),
+                cookies
             )
             .send()
             .await
