@@ -5,6 +5,7 @@ pub mod blutopia;
 pub mod broadcasthenet;
 pub mod common;
 pub mod darkpeers;
+pub mod digitalcore;
 pub mod fear_no_peer;
 pub mod gazelle_games;
 pub mod homiehelpdesk;
