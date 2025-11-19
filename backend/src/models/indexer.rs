@@ -16,7 +16,8 @@ use crate::{
         oldtoons::OldToonsScraper, only_encodes::OnlyEncodesScraper, orpheus::OrpheusScraper,
         phoenix_project::PhoenixProjectScraper, rastastugan::RastastuganScraper,
         redacted::RedactedScraper, reel_flix::ReelFlixScraper, seed_pool::SeedPoolScraper,
-        upload_cx::UploadCXScraper, yoinked::YoinkedScraper, yu_scene::YuSceneScraper,
+        speedapp::SpeedappScraper, upload_cx::UploadCXScraper, yoinked::YoinkedScraper,
+        yu_scene::YuSceneScraper,
     },
 };
 
@@ -156,6 +157,10 @@ impl Indexer {
             "HomieHelpDesk" => {
                 static HOMIE_HELP_DESK_SCRAPER: HomieHelpDeskScraper = HomieHelpDeskScraper;
                 &HOMIE_HELP_DESK_SCRAPER
+            }
+            "SpeedApp" => {
+                static SPEED_APP_SCRAPER: SpeedappScraper = SpeedappScraper;
+                &SPEED_APP_SCRAPER
             }
             _ => {
                 return Err(Error::CouldNotScrapeIndexer(
