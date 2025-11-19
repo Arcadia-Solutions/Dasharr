@@ -48,9 +48,9 @@ impl From<SpeedappResponse> for UserProfileScraped {
         };
 
         UserProfileScraped {
-            uploaded: uploaded,
-            downloaded: downloaded,
-            ratio: ratio,
+            uploaded,
+            downloaded,
+            ratio,
             // class: wrapper.class.unwrap_or(0).to_string(),
             donor: wrapper.is_donor,
             warned: wrapper.warned,
@@ -96,7 +96,7 @@ impl Scraper for SpeedappScraper {
         let response = serde_json::from_str::<SpeedappResponse>(&body)
             .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
 
-        if response.error.unwrap_or(false) == true {
+        if response.error.unwrap_or(false) {
             return Err(Error::CouldNotScrapeIndexer(response.message.unwrap()));
         }
 
