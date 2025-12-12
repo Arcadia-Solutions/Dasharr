@@ -23,3 +23,4 @@ pub mod seed_pool;
 pub mod upload_cx;
 pub mod yoinked;
 pub mod yu_scene;
+pub mod racing4everyone;
