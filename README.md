@@ -46,6 +46,7 @@ You can then visit the frontend at `http://localhost:3000` and the swagger at `h
 * OPS
 * OTW
 * PhoenixProject
+* R4E
 * Rastastugan
 * RED
 * ReelFlix
