@@ -14,10 +14,10 @@ use crate::{
         gazelle_games::GazelleGamesScraper, homiehelpdesk::HomieHelpDeskScraper,
         ita_torrents::ItaTorrentsScraper, lst::LSTScraper, myanonamouse::MyAnonamouseScraper,
         oldtoons::OldToonsScraper, only_encodes::OnlyEncodesScraper, orpheus::OrpheusScraper,
-        phoenix_project::PhoenixProjectScraper, rastastugan::RastastuganScraper,
-        redacted::RedactedScraper, reel_flix::ReelFlixScraper, seed_pool::SeedPoolScraper,
-        upload_cx::UploadCXScraper, yoinked::YoinkedScraper, yu_scene::YuSceneScraper,
-        racing4everyone::Racing4EveryoneScraper,
+        phoenix_project::PhoenixProjectScraper, racing4everyone::Racing4EveryoneScraper,
+        rastastugan::RastastuganScraper, redacted::RedactedScraper, reel_flix::ReelFlixScraper,
+        seed_pool::SeedPoolScraper, upload_cx::UploadCXScraper, yoinked::YoinkedScraper, 
+        yu_scene::YuSceneScraper
     },
 };
 

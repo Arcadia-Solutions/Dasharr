@@ -44,4 +44,3 @@ impl Scraper for Racing4EveryoneScraper {
         Ok(response.into())
     }
 }
-
