@@ -16,8 +16,8 @@ use crate::{
         oldtoons::OldToonsScraper, only_encodes::OnlyEncodesScraper, orpheus::OrpheusScraper,
         phoenix_project::PhoenixProjectScraper, racing4everyone::Racing4EveryoneScraper,
         rastastugan::RastastuganScraper, redacted::RedactedScraper, reel_flix::ReelFlixScraper,
-        seed_pool::SeedPoolScraper, upload_cx::UploadCXScraper, yoinked::YoinkedScraper, 
-        yu_scene::YuSceneScraper
+        seed_pool::SeedPoolScraper, upload_cx::UploadCXScraper, yoinked::YoinkedScraper,
+        yu_scene::YuSceneScraper,
     },
 };
 
