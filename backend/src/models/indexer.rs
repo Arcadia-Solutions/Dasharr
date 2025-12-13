@@ -14,9 +14,10 @@ use crate::{
         gazelle_games::GazelleGamesScraper, homiehelpdesk::HomieHelpDeskScraper,
         ita_torrents::ItaTorrentsScraper, lst::LSTScraper, myanonamouse::MyAnonamouseScraper,
         oldtoons::OldToonsScraper, only_encodes::OnlyEncodesScraper, orpheus::OrpheusScraper,
-        phoenix_project::PhoenixProjectScraper, rastastugan::RastastuganScraper,
-        redacted::RedactedScraper, reel_flix::ReelFlixScraper, seed_pool::SeedPoolScraper,
-        upload_cx::UploadCXScraper, yoinked::YoinkedScraper, yu_scene::YuSceneScraper,
+        phoenix_project::PhoenixProjectScraper, racing4everyone::Racing4EveryoneScraper,
+        rastastugan::RastastuganScraper, redacted::RedactedScraper, reel_flix::ReelFlixScraper,
+        seed_pool::SeedPoolScraper, upload_cx::UploadCXScraper, yoinked::YoinkedScraper,
+        yu_scene::YuSceneScraper,
     },
 };
 
@@ -156,6 +157,10 @@ impl Indexer {
             "HomieHelpDesk" => {
                 static HOMIE_HELP_DESK_SCRAPER: HomieHelpDeskScraper = HomieHelpDeskScraper;
                 &HOMIE_HELP_DESK_SCRAPER
+            }
+            "Racing4Everyone" => {
+                static RACING_4_EVERYONE_SCRAPER: Racing4EveryoneScraper = Racing4EveryoneScraper;
+                &RACING_4_EVERYONE_SCRAPER
             }
             _ => {
                 return Err(Error::CouldNotScrapeIndexer(

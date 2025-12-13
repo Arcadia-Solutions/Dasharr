@@ -15,6 +15,7 @@ pub mod oldtoons;
 pub mod only_encodes;
 pub mod orpheus;
 pub mod phoenix_project;
+pub mod racing4everyone;
 pub mod rastastugan;
 pub mod redacted;
 pub mod reel_flix;
