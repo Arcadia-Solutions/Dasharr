@@ -3,7 +3,7 @@
     <h2 class="wrapper-center title">Evolution on the selected period</h2>
     <div class="charts">
       <ContentContainer v-for="value in selectedValues" :key="value">
-        <h3 class="chart-heading">{{ value }}</h3>
+        <h3 class="chart-heading">{{ titleCase(value) }}</h3>
         <Chart type="line" :data="chartData(value)" :options="chartOptions(value)" />
       </ContentContainer>
     </div>
@@ -13,6 +13,7 @@
 import type { UserProfileVec, UserProfileScrapedVec } from '@/services/api/userStatsService'
 import Chart from 'primevue/chart'
 import ContentContainer from '../ContentContainer.vue'
+import { titleCase } from 'text-title-case'
 import 'chartjs-adapter-date-fns'
 
 const props = defineProps<{
