@@ -3,6 +3,7 @@
     <h2 class="wrapper-center title">Evolution on the selected period</h2>
     <div class="charts">
       <ContentContainer v-for="value in selectedValues" :key="value">
+        <h3 class="chart-heading">{{ value }}</h3>
         <Chart type="line" :data="chartData(value)" :options="chartOptions(value)" />
       </ContentContainer>
     </div>
@@ -93,5 +94,9 @@ const chartData = (value: keyof UserProfileScrapedVec) => {
     width: 36em;
     height: auto;
   }
+}
+
+.chart-heading {
+  text-align: center;
 }
 </style>
