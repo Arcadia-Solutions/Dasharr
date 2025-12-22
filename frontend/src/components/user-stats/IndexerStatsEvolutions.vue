@@ -32,6 +32,11 @@ const chartOptions = (value: keyof UserProfileScrapedVec) => {
       break
   }
   return {
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
     scales: {
       x: {
         type: 'time',
