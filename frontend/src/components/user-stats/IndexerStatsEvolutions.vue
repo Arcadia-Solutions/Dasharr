@@ -1,6 +1,6 @@
 <template>
   <div id="indexer-stats-detail">
-    <div class="wrapper-center title">Evolution on the selected period</div>
+    <h2 class="wrapper-center title">Evolution on the selected period</h2>
     <div class="charts">
       <ContentContainer v-for="value in selectedValues" :key="value">
         <Chart type="line" :data="chartData(value)" :options="chartOptions(value)" />

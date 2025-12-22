@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="wrapper-center title">Increase on the selected period</div>
+    <h2 class="wrapper-center title">Increase on the selected period</h2>
     <div class="items">
       <ContentContainer v-for="name in selectedValues" :key="name" class="item">
         <span class="value">{{ postProcessStat(name) }}</span>
