@@ -29,10 +29,14 @@ const postProcessStat = (value: keyof UserProfileScrapedVec) => {
     case 'seed_size':
     case 'uploaded_real':
     case 'downloaded_real':
-      result = bytesToReadable(result)
+      return bytesToReadable(result)
       break
   }
-  return result
+
+  if (Number.isInteger(result)) {
+    return result
+  }
+  return parseFloat(result).toFixed(2)
 }
 </script>
 <style scoped>
