@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div class="wrapper-center title">Increase on the selected period</div>
+    <h2 class="wrapper-center title">Increase on the selected period</h2>
     <div class="items">
       <ContentContainer v-for="name in selectedValues" :key="name" class="item">
         <span class="value">{{ postProcessStat(name) }}</span>
-        <span class="name">{{ name }}</span>
+        <span class="name">{{ titleCase(name) }}</span>
       </ContentContainer>
     </div>
   </div>
@@ -13,6 +13,7 @@
 import type { UserProfileScrapedVec, UserProfileVec } from '@/services/api/userStatsService'
 import ContentContainer from '../ContentContainer.vue'
 import { bytesToReadable } from '@/services/helpers'
+import { titleCase } from 'text-title-case'
 
 const props = defineProps<{
   userStats: UserProfileVec
@@ -28,10 +29,14 @@ const postProcessStat = (value: keyof UserProfileScrapedVec) => {
     case 'seed_size':
     case 'uploaded_real':
     case 'downloaded_real':
-      result = bytesToReadable(result)
+      return bytesToReadable(result)
       break
   }
-  return result
+
+  if (Number.isInteger(result)) {
+    return result
+  }
+  return parseFloat(result).toFixed(2)
 }
 </script>
 <style scoped>

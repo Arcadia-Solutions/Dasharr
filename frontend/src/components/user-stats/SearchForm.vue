@@ -19,6 +19,7 @@
       @update:modelValue="(val) => emit('selectedValuesUpdated', val)"
       filter
       display="chip"
+      :optionLabel="titleCase"
       placeholder="Charts to display"
     />
   </div>
@@ -31,6 +32,7 @@ import { getUserStats, type GetUserStatsQuery, type UserProfileScrapedVec, type 
 import { DatePicker, Select, MultiSelect, Button } from 'primevue'
 import { onMounted, ref } from 'vue'
 import { startOfMonth, endOfMonth } from 'date-fns'
+import { titleCase } from 'text-title-case'
 import { getIndexersEnriched, type IndexerEnriched } from '@/services/api/indexerService'
 import { showToast } from '@/main'
 
