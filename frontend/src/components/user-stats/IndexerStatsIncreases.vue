@@ -4,7 +4,7 @@
     <div class="items">
       <ContentContainer v-for="name in selectedValues" :key="name" class="item">
         <span class="value">{{ postProcessStat(name) }}</span>
-        <span class="name">{{ name }}</span>
+        <span class="name">{{ titleCase(name) }}</span>
       </ContentContainer>
     </div>
   </div>
@@ -13,6 +13,7 @@
 import type { UserProfileScrapedVec, UserProfileVec } from '@/services/api/userStatsService'
 import ContentContainer from '../ContentContainer.vue'
 import { bytesToReadable } from '@/services/helpers'
+import { titleCase } from 'text-title-case'
 
 const props = defineProps<{
   userStats: UserProfileVec
