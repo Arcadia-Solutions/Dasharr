@@ -21,6 +21,7 @@ actix-cors = "0.7.1"
 sqlx = { version = "0.8", features = [ "runtime-tokio", "tls-native-tls", "postgres", "chrono" ] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = {version = "1.0", features = ["preserve_order"]}
+url = "2.5"
 chrono = { version = "0.4", features = ["serde"] }
 log = "0.4"
 futures = "0.3"

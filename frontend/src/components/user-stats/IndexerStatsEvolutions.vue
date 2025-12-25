@@ -9,16 +9,18 @@
   </div>
 </template>
 <script lang="ts" setup>
-import type { UserProfileVec, UserProfileScrapedVec } from '@/services/api/userStatsService'
+import type { MultiIndexerUserStats, UserProfileScrapedVec } from '@/services/api/userStatsService'
+import type { IndexerEnriched } from '@/services/api/indexerService'
 import Chart from 'primevue/chart'
 import ContentContainer from '../ContentContainer.vue'
 import 'chartjs-adapter-date-fns'
+import { getTrackerColor } from '@/utils/trackerColors'
 
 const props = defineProps<{
-  userStats: UserProfileVec
+  userStats: MultiIndexerUserStats
+  indexerMetadata: Record<number, IndexerEnriched>
   selectedValues: (keyof UserProfileScrapedVec)[]
 }>()
-const documentStyle = getComputedStyle(document.documentElement)
 
 const chartOptions = (value: keyof UserProfileScrapedVec) => {
   let unit = ''
@@ -50,28 +52,43 @@ const chartOptions = (value: keyof UserProfileScrapedVec) => {
 }
 
 const chartData = (value: keyof UserProfileScrapedVec) => {
-  let data: number[] = []
-  switch (value) {
-    case 'uploaded':
-    case 'downloaded':
-    case 'seed_size':
-    case 'uploaded_real':
-    case 'downloaded_real':
-      data = props.userStats.profile[value].map((val) => (val ?? 0) / 1024 / 1024 / 1024)
-      break
-    default:
-      data = props.userStats.profile[value] as number[]
-  }
+  const datasets = Object.entries(props.userStats).map(([indexerIdStr, userStatsVec]) => {
+    const indexerId = parseInt(indexerIdStr)
+    const indexer = props.indexerMetadata[indexerId]
+    const trackerName = indexer?.name || `Tracker ${indexerId}`
+    const color = getTrackerColor(trackerName)
+
+    const rawData = userStatsVec.profile[value]
+    let processedData: number[] = []
+    switch (value) {
+      case 'uploaded':
+      case 'downloaded':
+        processedData = (rawData as number[]).map((val) => val / 1024 / 1024 / 1024)
+        break
+      case 'seed_size':
+      case 'uploaded_real':
+      case 'downloaded_real':
+        processedData = (rawData as (number | null)[]).map((val) => ((val ?? 0) as number) / 1024 / 1024 / 1024)
+        break
+      default:
+        processedData = rawData as number[]
+    }
+
+    const dataPoints = processedData.map((val, idx) => ({
+      x: new Date(userStatsVec.scraped_at[idx]).toISOString(),
+      y: val,
+    }))
+
+    return {
+      borderColor: color,
+      label: `${value} - ${trackerName}`,
+      data: dataPoints,
+      tension: 0.2,
+    }
+  })
+
   return {
-    labels: props.userStats.scraped_at.map((date) => new Date(date).toISOString()),
-    datasets: [
-      {
-        // tension: 0.2,
-        borderColor: documentStyle.getPropertyValue('--p-button-primary-border-color'),
-        label: value,
-        data: data,
-      },
-    ],
+    datasets: datasets,
   }
 }
 </script>

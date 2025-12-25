@@ -10,7 +10,37 @@
       :showOnFocus="false"
       @update:modelValue="fetchUserStats"
     />
-    <Select v-model="selectedIndexer" :options="selectableIndexers" filter optionLabel="name" placeholder="Select an indexer" @change="fetchUserStats" />
+    <div class="tracker-select-container">
+      <MultiSelect
+        v-model="selectedIndexers"
+        :options="selectableIndexers"
+        filter
+        optionLabel="name"
+        placeholder="Select trackers"
+        @update:modelValue="fetchUserStats"
+        class="tracker-select"
+      >
+        <template #option="slotProps">
+          <div class="tracker-option">
+            <span class="tracker-color-indicator" :style="{ backgroundColor: getTrackerColor(slotProps.option.name) }"></span>
+            <span>{{ slotProps.option.name }}</span>
+          </div>
+        </template>
+        <template #value="slotProps">
+          <div v-if="slotProps.value && slotProps.value.length" class="tracker-chips">
+            <span
+              v-for="indexer in slotProps.value"
+              :key="indexer.id"
+              class="tracker-chip"
+            >
+              <span class="tracker-color-indicator" :style="{ backgroundColor: getTrackerColor(indexer.name) }"></span>
+              <span>{{ indexer.name }}</span>
+            </span>
+          </div>
+          <span v-else>{{ slotProps.placeholder }}</span>
+        </template>
+      </MultiSelect>
+    </div>
   </div>
   <div class="wrapper-center">
     <MultiSelect
@@ -27,64 +57,87 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { getUserStats, type GetUserStatsQuery, type UserProfileScrapedVec, type UserProfileVec } from '@/services/api/userStatsService'
-import { DatePicker, Select, MultiSelect, Button } from 'primevue'
+import { getUserStats, type GetUserStatsQuery, type UserProfileScrapedVec, type MultiIndexerUserStats } from '@/services/api/userStatsService'
+import { DatePicker, MultiSelect, Button } from 'primevue'
 import { onMounted, ref } from 'vue'
 import { startOfMonth, endOfMonth } from 'date-fns'
 import { getIndexersEnriched, type IndexerEnriched } from '@/services/api/indexerService'
 import { showToast } from '@/main'
+import { getTrackerColor } from '@/utils/trackerColors'
 
 const emit = defineEmits<{
-  gotResults: [UserProfileVec]
+  gotResults: [MultiIndexerUserStats, Record<number, IndexerEnriched>]
   selectedValuesUpdated: [(keyof UserProfileScrapedVec)[]]
 }>()
 
 const displayableValues = ref<(keyof UserProfileScrapedVec)[]>([])
 const selectedValues = ref<(typeof displayableValues.value)[number][]>(['uploaded', 'downloaded'])
-const loading = ref(false)
 const selectableIndexers = ref<IndexerEnriched[]>([])
-const selectedIndexer = ref<IndexerEnriched>()
+const selectedIndexers = ref<IndexerEnriched[]>([])
 const dateRange = ref<Date[]>([])
-const form = ref<GetUserStatsQuery>({
-  date_from: '',
-  date_to: '',
-  indexer_id: 0,
-})
+const indexerMap = ref<Record<number, IndexerEnriched>>({})
 
 const setPresetRange = () => {
   const today = new Date()
   dateRange.value = [startOfMonth(today), endOfMonth(today)]
 }
+
 const fetchUserStats = async () => {
-  if (selectedIndexer.value) {
-    loading.value = true
-    form.value.date_from = dateRange.value[0].toISOString().slice(0, -1)
-    form.value.date_to = new Date(dateRange.value[1].setHours(23, 59, 59, 999)).toISOString().slice(0, -1)
-    form.value.indexer_id = selectedIndexer.value.id
-    getUserStats(form.value)
+  if (selectedIndexers.value.length > 0 && dateRange.value.length === 2) {
+    const endDate = new Date(dateRange.value[1])
+    endDate.setHours(23, 59, 59, 999)
+    const form: GetUserStatsQuery = {
+      date_from: dateRange.value[0].toISOString().slice(0, -1),
+      date_to: endDate.toISOString().slice(0, -1),
+      indexer_ids: selectedIndexers.value.map((idx) => idx.id),
+    }
+    getUserStats(form)
       .then((data) => {
-        emit('gotResults', data)
-        displayableValues.value = (Object.keys(data.profile) as (keyof UserProfileScrapedVec)[]).filter(
-          // @ts-expect-error TODO: fix error .at() doesn't exist
-          (key) => data.profile[key] && data.profile[key].length > 0 && data.profile[key].at(-1) !== null,
-        )
-        displayableValues.value.splice(displayableValues.value.indexOf('avatar'), 1)
-        displayableValues.value.splice(displayableValues.value.indexOf('class'), 1)
-        selectedValues.value = selectedValues.value.filter((val) => displayableValues.value.includes(val))
-        emit('selectedValuesUpdated', selectedValues.value)
+        if (!data || Object.keys(data).length === 0) {
+          showToast('', 'No data available for selected trackers', 'warn', 3000)
+          return
+        }
+        emit('gotResults', data, indexerMap.value)
+        const firstIndexerData = Object.values(data)[0]
+        if (firstIndexerData && firstIndexerData.profile) {
+          displayableValues.value = (Object.keys(firstIndexerData.profile) as (keyof UserProfileScrapedVec)[]).filter(
+            (key) => {
+              const arr = firstIndexerData.profile[key]
+              if (!arr || !Array.isArray(arr) || arr.length === 0) {
+                return false
+              }
+              const lastIndex = arr.length - 1
+              return arr[lastIndex] !== null && arr[lastIndex] !== undefined
+            }
+          )
+          const avatarIndex = displayableValues.value.indexOf('avatar')
+          if (avatarIndex !== -1) {
+            displayableValues.value.splice(avatarIndex, 1)
+          }
+          const classIndex = displayableValues.value.indexOf('class')
+          if (classIndex !== -1) {
+            displayableValues.value.splice(classIndex, 1)
+          }
+          selectedValues.value = selectedValues.value.filter((val) => displayableValues.value.includes(val))
+          emit('selectedValuesUpdated', selectedValues.value)
+        }
       })
-      .finally(() => (loading.value = false))
+      .catch((error) => {
+        console.error('Error fetching user stats:', error)
+      })
   }
 }
+
 const setDefaultForm = () => {
-  if (!selectedIndexer.value) {
-    showToast('', 'Select an indexer first', 'error', 2000)
+  if (selectedIndexers.value.length === 0) {
+    showToast('', 'Select at least one tracker first', 'error', 2000)
   } else {
     localStorage.setItem('defaultSelectedValues', JSON.stringify(selectedValues.value))
-    localStorage.setItem('defaultSelectedIndexerId', selectedIndexer.value.id.toString())
-    showToast('', 'Indexer and displayed values set as default', 'success', 3000)
+    localStorage.setItem('defaultSelectedIndexerIds', JSON.stringify(selectedIndexers.value.map((idx) => idx.id)))
+    showToast('', 'Trackers and displayed values set as default', 'success', 3000)
   }
 }
+
 onMounted(async () => {
   const indexers = await getIndexersEnriched(true)
   if (indexers.length === 0) {
@@ -92,17 +145,23 @@ onMounted(async () => {
     return
   }
   selectableIndexers.value = indexers
+  indexerMap.value = indexers.reduce((acc, idx) => {
+    acc[idx.id] = idx
+    return acc
+  }, {} as Record<number, IndexerEnriched>)
+  
   // load default form if it exists
   const defaultSelectedValues = localStorage.getItem('defaultSelectedValues')
   if (defaultSelectedValues) {
     selectedValues.value = JSON.parse(defaultSelectedValues)
     emit('selectedValuesUpdated', selectedValues.value)
   }
-  const defaultSelectedIndexerId = localStorage.getItem('defaultSelectedIndexerId')
-  if (defaultSelectedIndexerId) {
-    selectedIndexer.value = selectableIndexers.value.find((indexer) => indexer.id === parseInt(defaultSelectedIndexerId))
+  const defaultSelectedIndexerIds = localStorage.getItem('defaultSelectedIndexerIds')
+  if (defaultSelectedIndexerIds) {
+    const ids = JSON.parse(defaultSelectedIndexerIds) as number[]
+    selectedIndexers.value = indexers.filter((idx) => ids.includes(idx.id))
   } else {
-    selectedIndexer.value = selectableIndexers.value[0]
+    selectedIndexers.value = [indexers[0]]
   }
   setPresetRange()
   await fetchUserStats()
@@ -115,5 +174,44 @@ onMounted(async () => {
   > * {
     margin: 5px;
   }
+}
+
+.tracker-select-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.tracker-select {
+  min-width: 17rem;
+}
+
+.tracker-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tracker-color-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.tracker-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tracker-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  background-color: var(--p-chip-background, rgba(255, 255, 255, 0.1));
+  border-radius: 4px;
+  font-size: 0.875rem;
 }
 </style>

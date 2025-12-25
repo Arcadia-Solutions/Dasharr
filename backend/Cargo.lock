@@ -623,6 +623,7 @@ dependencies = [
  "thiserror",
  "tokio",
  "tokio-cron-scheduler",
+ "url",
  "utoipa",
  "utoipa-actix-web",
  "utoipa-swagger-ui",

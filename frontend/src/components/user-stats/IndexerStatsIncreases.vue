@@ -10,18 +10,28 @@
   </div>
 </template>
 <script lang="ts" setup>
-import type { UserProfileScrapedVec, UserProfileVec } from '@/services/api/userStatsService'
+import type { UserProfileScrapedVec, MultiIndexerUserStats } from '@/services/api/userStatsService'
 import ContentContainer from '../ContentContainer.vue'
 import { bytesToReadable } from '@/services/helpers'
 
 const props = defineProps<{
-  userStats: UserProfileVec
+  userStats: MultiIndexerUserStats
   selectedValues: (keyof UserProfileScrapedVec)[]
 }>()
 
 const postProcessStat = (value: keyof UserProfileScrapedVec) => {
-  let result: number | string =
-    ((props.userStats.profile[value]?.[props.userStats.profile[value].length - 1] as number) ?? 0) - ((props.userStats.profile[value]?.[0] as number) ?? 0)
+  let totalIncrease = 0
+  
+  Object.values(props.userStats).forEach((userStatsVec) => {
+    const profileArray = userStatsVec.profile[value]
+    if (profileArray && profileArray.length > 0) {
+      const first = (profileArray[0] as number) ?? 0
+      const last = (profileArray[profileArray.length - 1] as number) ?? 0
+      totalIncrease += last - first
+    }
+  })
+
+  let result: number | string = totalIncrease
   switch (value) {
     case 'uploaded':
     case 'downloaded':

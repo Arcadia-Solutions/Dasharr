@@ -1,6 +1,6 @@
 use utoipa::OpenApi;
 
-use crate::handlers::user_stats::get_user_stats::GetUserStatsQuery;
+use crate::handlers::user_stats::get_user_stats::GetUserStatsQueryParams;
 
 #[derive(OpenApi)]
 #[openapi(
@@ -15,6 +15,6 @@ use crate::handlers::user_stats::get_user_stats::GetUserStatsQuery;
         crate::handlers::user_stats::get_user_stats::exec,
         crate::handlers::user_stats::get_user_stats_prometheus::exec,
     ),
-    components(schemas(GetUserStatsQuery),)
+    components(schemas(GetUserStatsQueryParams),)
 )]
 pub struct ApiDoc;
