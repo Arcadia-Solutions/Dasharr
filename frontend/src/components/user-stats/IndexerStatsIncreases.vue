@@ -21,7 +21,7 @@ const props = defineProps<{
 
 const postProcessStat = (value: keyof UserProfileScrapedVec) => {
   let totalIncrease = 0
-  
+
   Object.values(props.userStats).forEach((userStatsVec) => {
     const profileArray = userStatsVec.profile[value]
     if (profileArray && profileArray.length > 0) {

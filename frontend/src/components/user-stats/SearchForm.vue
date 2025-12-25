@@ -28,11 +28,7 @@
         </template>
         <template #value="slotProps">
           <div v-if="slotProps.value && slotProps.value.length" class="tracker-chips">
-            <span
-              v-for="indexer in slotProps.value"
-              :key="indexer.id"
-              class="tracker-chip"
-            >
+            <span v-for="indexer in slotProps.value" :key="indexer.id" class="tracker-chip">
               <span class="tracker-color-indicator" :style="{ backgroundColor: getTrackerColor(indexer.name) }"></span>
               <span>{{ indexer.name }}</span>
             </span>
@@ -100,16 +96,14 @@ const fetchUserStats = async () => {
         emit('gotResults', data, indexerMap.value)
         const firstIndexerData = Object.values(data)[0]
         if (firstIndexerData && firstIndexerData.profile) {
-          displayableValues.value = (Object.keys(firstIndexerData.profile) as (keyof UserProfileScrapedVec)[]).filter(
-            (key) => {
-              const arr = firstIndexerData.profile[key]
-              if (!arr || !Array.isArray(arr) || arr.length === 0) {
-                return false
-              }
-              const lastIndex = arr.length - 1
-              return arr[lastIndex] !== null && arr[lastIndex] !== undefined
+          displayableValues.value = (Object.keys(firstIndexerData.profile) as (keyof UserProfileScrapedVec)[]).filter((key) => {
+            const arr = firstIndexerData.profile[key]
+            if (!arr || !Array.isArray(arr) || arr.length === 0) {
+              return false
             }
-          )
+            const lastIndex = arr.length - 1
+            return arr[lastIndex] !== null && arr[lastIndex] !== undefined
+          })
           const avatarIndex = displayableValues.value.indexOf('avatar')
           if (avatarIndex !== -1) {
             displayableValues.value.splice(avatarIndex, 1)
@@ -145,11 +139,14 @@ onMounted(async () => {
     return
   }
   selectableIndexers.value = indexers
-  indexerMap.value = indexers.reduce((acc, idx) => {
-    acc[idx.id] = idx
-    return acc
-  }, {} as Record<number, IndexerEnriched>)
-  
+  indexerMap.value = indexers.reduce(
+    (acc, idx) => {
+      acc[idx.id] = idx
+      return acc
+    },
+    {} as Record<number, IndexerEnriched>,
+  )
+
   // load default form if it exists
   const defaultSelectedValues = localStorage.getItem('defaultSelectedValues')
   if (defaultSelectedValues) {
