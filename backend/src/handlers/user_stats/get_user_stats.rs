@@ -95,7 +95,7 @@ pub async fn exec(
     for profile in user_stats {
         grouped_profiles
             .entry(profile.indexer_id)
-            .or_insert_with(Vec::new)
+            .or_default()
             .push(profile);
     }
 
