@@ -64,3 +64,33 @@ impl UserProfileVec {
         profiles.into_iter().collect()
     }
 }
+
+#[derive(Serialize, ToSchema)]
+pub struct IndexerStats {
+    pub indexer_id: i32,
+    #[schema(value_type = Vec<String>, format = DateTime)]
+    pub scraped_at: Vec<DateTime<Local>>,
+    pub profile: UserProfileScrapedVec,
+}
+
+impl IndexerStats {
+    pub fn group_by_indexer(profiles: Vec<UserProfile>) -> Vec<Self> {
+        let mut groups: std::collections::BTreeMap<i32, Vec<UserProfile>> =
+            std::collections::BTreeMap::new();
+        for profile in profiles {
+            groups.entry(profile.indexer_id).or_default().push(profile);
+        }
+        groups
+            .into_iter()
+            .map(|(indexer_id, profiles)| {
+                let scraped_at = profiles.iter().map(|p| p.scraped_at).collect();
+                let profile = profiles.into_iter().map(|p| p.profile).collect();
+                IndexerStats {
+                    indexer_id,
+                    scraped_at,
+                    profile,
+                }
+            })
+            .collect()
+    }
+}

@@ -78,7 +78,7 @@ impl ConnectionPool {
 
     pub async fn find_user_stats(
         &self,
-        indexer_id: i64,
+        indexer_ids: &[i32],
         date_from: &NaiveDateTime,
         date_to: &NaiveDateTime,
     ) -> Result<Vec<UserProfile>> {
@@ -88,11 +88,11 @@ impl ConnectionPool {
         let indexers: Vec<UserProfile> = sqlx::query_as(
             r#"
             SELECT * FROM user_profiles
-            WHERE indexer_id = $1 AND scraped_at BETWEEN  $2 AND $3
+            WHERE indexer_id = ANY($1) AND scraped_at BETWEEN  $2 AND $3
             ORDER BY scraped_at ASC
             "#,
         )
-        .bind(indexer_id)
+        .bind(indexer_ids)
         .bind(date_from)
         .bind(date_to)
         .fetch_all(self.borrow())

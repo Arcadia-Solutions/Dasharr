@@ -10,7 +10,15 @@
       :showOnFocus="false"
       @update:modelValue="fetchUserStats"
     />
-    <Select v-model="selectedIndexer" :options="selectableIndexers" filter optionLabel="name" placeholder="Select an indexer" @change="fetchUserStats" />
+    <MultiSelect
+      v-model="selectedIndexers"
+      :options="selectableIndexers"
+      filter
+      optionLabel="name"
+      placeholder="Select indexers"
+      display="chip"
+      @update:modelValue="fetchUserStats"
+    />
   </div>
   <div class="wrapper-center">
     <MultiSelect
@@ -32,29 +40,30 @@ import {
   getIndexersEnriched,
   type GetUserStatsRequest,
   type UserProfileScrapedVec,
-  type UserProfileVec,
+  type IndexerStats,
   type IndexerEnriched,
 } from '@/services/api-schema'
-import { DatePicker, Select, MultiSelect, Button } from 'primevue'
+import { DatePicker, MultiSelect, Button } from 'primevue'
 import { onMounted, ref } from 'vue'
 import { startOfMonth, endOfMonth } from 'date-fns'
 import { showToast } from '@/main'
 
 const emit = defineEmits<{
-  gotResults: [UserProfileVec]
+  gotResults: [IndexerStats[]]
   selectedValuesUpdated: [(keyof UserProfileScrapedVec)[]]
+  selectedIndexersUpdated: [Map<number, string>]
 }>()
 
 const displayableValues = ref<(keyof UserProfileScrapedVec)[]>([])
 const selectedValues = ref<(typeof displayableValues.value)[number][]>(['uploaded', 'downloaded'])
 const loading = ref(false)
 const selectableIndexers = ref<IndexerEnriched[]>([])
-const selectedIndexer = ref<IndexerEnriched>()
+const selectedIndexers = ref<IndexerEnriched[]>([])
 const dateRange = ref<Date[]>([])
 const form = ref<GetUserStatsRequest>({
   date_from: '',
   date_to: '',
-  indexer_id: 0,
+  indexer_ids: '',
 })
 
 const setPresetRange = () => {
@@ -62,33 +71,38 @@ const setPresetRange = () => {
   dateRange.value = [startOfMonth(today), endOfMonth(today)]
 }
 const fetchUserStats = async () => {
-  if (selectedIndexer.value) {
+  if (selectedIndexers.value.length > 0) {
     loading.value = true
     form.value.date_from = dateRange.value[0].toISOString().slice(0, -1)
     form.value.date_to = new Date(dateRange.value[1].setHours(23, 59, 59, 999)).toISOString().slice(0, -1)
-    form.value.indexer_id = selectedIndexer.value.id
+    form.value.indexer_ids = selectedIndexers.value.map((i) => i.id).join(',')
+    const indexerNames = new Map(selectedIndexers.value.map((i) => [i.id, i.name]))
+    emit('selectedIndexersUpdated', indexerNames)
     getUserStats(form.value)
       .then((data) => {
         emit('gotResults', data)
-        displayableValues.value = (Object.keys(data.profile) as (keyof UserProfileScrapedVec)[]).filter(
-          // @ts-expect-error TODO: fix error .at() doesn't exist
-          (key) => data.profile[key] && data.profile[key].length > 0 && data.profile[key].at(-1) !== null,
-        )
-        displayableValues.value.splice(displayableValues.value.indexOf('avatar'), 1)
-        displayableValues.value.splice(displayableValues.value.indexOf('class'), 1)
-        selectedValues.value = selectedValues.value.filter((val) => displayableValues.value.includes(val))
+        if (data.length > 0) {
+          const profile = data[0].profile
+          displayableValues.value = (Object.keys(profile) as (keyof UserProfileScrapedVec)[]).filter(
+            // @ts-expect-error TODO: fix error .at() doesn't exist
+            (key) => profile[key] && profile[key].length > 0 && profile[key].at(-1) !== null,
+          )
+          displayableValues.value.splice(displayableValues.value.indexOf('avatar'), 1)
+          displayableValues.value.splice(displayableValues.value.indexOf('class'), 1)
+          selectedValues.value = selectedValues.value.filter((val) => displayableValues.value.includes(val))
+        }
         emit('selectedValuesUpdated', selectedValues.value)
       })
       .finally(() => (loading.value = false))
   }
 }
 const setDefaultForm = () => {
-  if (!selectedIndexer.value) {
+  if (selectedIndexers.value.length === 0) {
     showToast('', 'Select an indexer first', 'error', 2000)
   } else {
     localStorage.setItem('defaultSelectedValues', JSON.stringify(selectedValues.value))
-    localStorage.setItem('defaultSelectedIndexerId', selectedIndexer.value.id.toString())
-    showToast('', 'Indexer and displayed values set as default', 'success', 3000)
+    localStorage.setItem('defaultSelectedIndexerIds', JSON.stringify(selectedIndexers.value.map((i) => i.id)))
+    showToast('', 'Indexers and displayed values set as default', 'success', 3000)
   }
 }
 onMounted(async () => {
@@ -104,11 +118,12 @@ onMounted(async () => {
     selectedValues.value = JSON.parse(defaultSelectedValues)
     emit('selectedValuesUpdated', selectedValues.value)
   }
-  const defaultSelectedIndexerId = localStorage.getItem('defaultSelectedIndexerId')
-  if (defaultSelectedIndexerId) {
-    selectedIndexer.value = selectableIndexers.value.find((indexer) => indexer.id === parseInt(defaultSelectedIndexerId))
+  const defaultSelectedIndexerIds = localStorage.getItem('defaultSelectedIndexerIds')
+  if (defaultSelectedIndexerIds) {
+    const ids: number[] = JSON.parse(defaultSelectedIndexerIds)
+    selectedIndexers.value = selectableIndexers.value.filter((indexer) => ids.includes(indexer.id))
   } else {
-    selectedIndexer.value = selectableIndexers.value[0]
+    selectedIndexers.value = [selectableIndexers.value[0]]
   }
   setPresetRange()
   await fetchUserStats()

@@ -1,4 +1,4 @@
-use crate::{Dasharr, error::Result, models::user_stats::UserProfileVec};
+use crate::{Dasharr, error::Result, models::user_stats::IndexerStats};
 use actix_web::{
     HttpResponse,
     web::{Data, Query},
@@ -9,7 +9,8 @@ use utoipa::{IntoParams, ToSchema};
 
 #[derive(Debug, Deserialize, IntoParams, ToSchema)]
 pub struct GetUserStatsQuery {
-    pub indexer_id: i64,
+    /// Comma-separated list of indexer IDs
+    pub indexer_ids: String,
     #[param(value_type = String, format = DateTime)]
     pub date_from: NaiveDateTime,
     #[param(value_type = String, format = DateTime)]
@@ -23,16 +24,20 @@ pub struct GetUserStatsQuery {
     path = "/api/user-stats",
     params(GetUserStatsQuery),
     responses(
-        (status = 200, description = "Successfully got user stats", body=UserProfileVec),
+        (status = 200, description = "Successfully got user stats", body=Vec<IndexerStats>),
     )
 )]
 pub async fn exec(arc: Data<Dasharr>, query: Query<GetUserStatsQuery>) -> Result<HttpResponse> {
+    let indexer_ids: Vec<i32> = query
+        .indexer_ids
+        .split(',')
+        .filter_map(|s| s.trim().parse().ok())
+        .collect();
     let user_stats = arc
         .pool
-        .find_user_stats(query.indexer_id, &query.date_from, &query.date_to)
+        .find_user_stats(&indexer_ids, &query.date_from, &query.date_to)
         .await?;
-    // let test: UserProfileVec = user_stats.into();
-    let user_stats_reduced = UserProfileVec::from_vec(user_stats);
+    let grouped_stats = IndexerStats::group_by_indexer(user_stats);
 
-    Ok(HttpResponse::Ok().json(user_stats_reduced))
+    Ok(HttpResponse::Ok().json(grouped_stats))
 }
