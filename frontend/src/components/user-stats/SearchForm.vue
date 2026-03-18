@@ -1,6 +1,22 @@
 <template>
   <div class="line">
+    <SelectButton
+      v-model="selectedPreset"
+      :options="[
+        { label: 'Week', value: 7 },
+        { label: 'Month', value: 30 },
+        { label: 'Year', value: 365 },
+        { label: 'All', value: 0 },
+        { label: 'Custom', value: -1 },
+      ]"
+      optionLabel="label"
+      optionValue="value"
+      :allowEmpty="false"
+      size="small"
+      @update:modelValue="onPresetChange"
+    />
     <DatePicker
+      v-if="selectedPreset === -1"
       v-model="dateRange"
       dateFormat="d M yy"
       selectionMode="range"
@@ -43,9 +59,9 @@ import {
   type IndexerStats,
   type IndexerEnriched,
 } from '@/services/api-schema'
-import { DatePicker, MultiSelect, Button } from 'primevue'
+import { DatePicker, MultiSelect, Button, SelectButton } from 'primevue'
 import { onMounted, ref } from 'vue'
-import { startOfMonth, endOfMonth } from 'date-fns'
+import { subDays } from 'date-fns'
 import { showToast } from '@/main'
 
 const emit = defineEmits<{
@@ -60,15 +76,22 @@ const loading = ref(false)
 const selectableIndexers = ref<IndexerEnriched[]>([])
 const selectedIndexers = ref<IndexerEnriched[]>([])
 const dateRange = ref<Date[]>([])
+const selectedPreset = ref(30)
 const form = ref<GetUserStatsRequest>({
   date_from: '',
   date_to: '',
   indexer_ids: '',
 })
 
-const setPresetRange = () => {
+const onPresetChange = (days: number) => {
+  if (days === -1) return
   const today = new Date()
-  dateRange.value = [startOfMonth(today), endOfMonth(today)]
+  if (days === 0) {
+    dateRange.value = [new Date(0), today]
+  } else {
+    dateRange.value = [subDays(today, days), today]
+  }
+  fetchUserStats()
 }
 const fetchUserStats = async () => {
   if (selectedIndexers.value.length > 0) {
@@ -125,14 +148,14 @@ onMounted(async () => {
   } else {
     selectedIndexers.value = [selectableIndexers.value[0]]
   }
-  setPresetRange()
-  await fetchUserStats()
+  onPresetChange(selectedPreset.value)
 })
 </script>
 <style scoped>
 .line {
   display: flex;
   justify-content: center;
+  align-items: center;
   > * {
     margin: 5px;
   }
