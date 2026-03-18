@@ -3,7 +3,7 @@ use chrono::NaiveDateTime;
 use crate::{
     connection_pool::ConnectionPool,
     error::{Error, Result},
-    models::user_stats::UserProfile,
+    models::user_stats::{StatsInterval, UserProfile},
 };
 use std::borrow::Borrow;
 
@@ -81,24 +81,50 @@ impl ConnectionPool {
         indexer_ids: &[i32],
         date_from: &NaiveDateTime,
         date_to: &NaiveDateTime,
+        interval: &StatsInterval,
     ) -> Result<Vec<UserProfile>> {
         // currently not possible to use a macro
         // https://github.com/launchbadge/sqlx/issues/514
         // query_as_unchecked also tries to check the result of the query...
-        let indexers: Vec<UserProfile> = sqlx::query_as(
-            r#"
-            SELECT * FROM user_profiles
-            WHERE indexer_id = ANY($1) AND scraped_at BETWEEN  $2 AND $3
-            ORDER BY scraped_at ASC
-            "#,
-        )
-        .bind(indexer_ids)
-        .bind(date_from)
-        .bind(date_to)
-        .fetch_all(self.borrow())
-        .await
-        .map_err(Error::CouldNotGetIndexers)?;
+        // query_as! macro cannot be used here because UserProfile uses #[sqlx(flatten)]
+        // which is only supported by the runtime FromRow trait, not the compile-time macro.
+        let query = match interval {
+            StatsInterval::Day => {
+                r#"
+                SELECT DISTINCT ON (indexer_id, date_trunc('day', scraped_at))
+                    *
+                FROM user_profiles
+                WHERE indexer_id = ANY($1) AND scraped_at BETWEEN $2 AND $3
+                ORDER BY indexer_id, date_trunc('day', scraped_at), scraped_at DESC
+                "#
+            }
+            StatsInterval::Week => {
+                r#"
+                SELECT DISTINCT ON (indexer_id, date_trunc('week', scraped_at))
+                    *
+                FROM user_profiles
+                WHERE indexer_id = ANY($1) AND scraped_at BETWEEN $2 AND $3
+                ORDER BY indexer_id, date_trunc('week', scraped_at), scraped_at DESC
+                "#
+            }
+            StatsInterval::Month => {
+                r#"
+                SELECT DISTINCT ON (indexer_id, date_trunc('month', scraped_at))
+                    *
+                FROM user_profiles
+                WHERE indexer_id = ANY($1) AND scraped_at BETWEEN $2 AND $3
+                ORDER BY indexer_id, date_trunc('month', scraped_at), scraped_at DESC
+                "#
+            }
+        };
+        let user_profiles: Vec<UserProfile> = sqlx::query_as(query)
+            .bind(indexer_ids)
+            .bind(date_from)
+            .bind(date_to)
+            .fetch_all(self.borrow())
+            .await
+            .map_err(Error::CouldNotGetIndexers)?;
 
-        Ok(indexers)
+        Ok(user_profiles)
     }
 }

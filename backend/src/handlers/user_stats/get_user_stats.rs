@@ -1,4 +1,8 @@
-use crate::{Dasharr, error::Result, models::user_stats::IndexerStats};
+use crate::{
+    Dasharr,
+    error::Result,
+    models::user_stats::{IndexerStats, StatsInterval},
+};
 use actix_web::{
     HttpResponse,
     web::{Data, Query},
@@ -15,6 +19,7 @@ pub struct GetUserStatsQuery {
     pub date_from: NaiveDateTime,
     #[param(value_type = String, format = DateTime)]
     pub date_to: NaiveDateTime,
+    pub interval: StatsInterval,
 }
 
 #[utoipa::path(
@@ -35,7 +40,12 @@ pub async fn exec(arc: Data<Dasharr>, query: Query<GetUserStatsQuery>) -> Result
         .collect();
     let user_stats = arc
         .pool
-        .find_user_stats(&indexer_ids, &query.date_from, &query.date_to)
+        .find_user_stats(
+            &indexer_ids,
+            &query.date_from,
+            &query.date_to,
+            &query.interval,
+        )
         .await?;
     let grouped_stats = IndexerStats::group_by_indexer(user_stats);
 

@@ -275,6 +275,7 @@ export interface GetUserStatsRequest {
     'indexer_ids': string;
     'date_from': string;
     'date_to': string;
+    'interval': string;
 }
 
 
@@ -283,7 +284,7 @@ export const getUserStats = async (request: GetUserStatsRequest, options?: RawAx
     const response = await globalAxios.request<Array<IndexerStats>>({
         url: `/api/user-stats`,
         method: 'GET',
-        params: { 'indexer_ids': request['indexer_ids'], 'date_from': request['date_from'], 'date_to': request['date_to'] },
+        params: { 'indexer_ids': request['indexer_ids'], 'date_from': request['date_from'], 'date_to': request['date_to'], 'interval': request['interval'] },
         ...options
     });
     return response.data;

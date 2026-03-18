@@ -2,7 +2,26 @@ use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use soa_derive::StructOfArray;
 use sqlx::prelude::FromRow;
+use std::fmt;
 use utoipa::ToSchema;
+
+#[derive(Debug, Deserialize, Serialize, ToSchema, Clone)]
+#[serde(rename_all = "snake_case")]
+pub enum StatsInterval {
+    Day,
+    Week,
+    Month,
+}
+
+impl fmt::Display for StatsInterval {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            StatsInterval::Day => write!(f, "day"),
+            StatsInterval::Week => write!(f, "week"),
+            StatsInterval::Month => write!(f, "month"),
+        }
+    }
+}
 
 #[derive(Debug, Default, Deserialize, Serialize, FromRow, StructOfArray, ToSchema)]
 #[soa_attr(Vec, derive(Deserialize, Serialize, ToSchema))]

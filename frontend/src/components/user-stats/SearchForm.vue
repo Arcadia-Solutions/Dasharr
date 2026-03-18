@@ -1,5 +1,6 @@
 <template>
   <div class="line">
+    <span class="label">Period</span>
     <SelectButton
       v-model="selectedPreset"
       :options="[
@@ -24,6 +25,20 @@
       showIcon
       fluid
       :showOnFocus="false"
+      @update:modelValue="fetchUserStats"
+    />
+    <span class="label">Interval</span>
+    <SelectButton
+      v-model="selectedInterval"
+      :options="[
+        { label: 'Day', value: 'day' },
+        { label: 'Week', value: 'week' },
+        { label: 'Month', value: 'month' },
+      ]"
+      optionLabel="label"
+      optionValue="value"
+      :allowEmpty="false"
+      size="small"
       @update:modelValue="fetchUserStats"
     />
     <MultiSelect
@@ -77,10 +92,12 @@ const selectableIndexers = ref<IndexerEnriched[]>([])
 const selectedIndexers = ref<IndexerEnriched[]>([])
 const dateRange = ref<Date[]>([])
 const selectedPreset = ref(30)
+const selectedInterval = ref('day')
 const form = ref<GetUserStatsRequest>({
   date_from: '',
   date_to: '',
   indexer_ids: '',
+  interval: 'day',
 })
 
 const onPresetChange = (days: number) => {
@@ -99,6 +116,7 @@ const fetchUserStats = async () => {
     form.value.date_from = dateRange.value[0].toISOString().slice(0, -1)
     form.value.date_to = new Date(dateRange.value[1].setHours(23, 59, 59, 999)).toISOString().slice(0, -1)
     form.value.indexer_ids = selectedIndexers.value.map((i) => i.id).join(',')
+    form.value.interval = selectedInterval.value
     const indexerNames = new Map(selectedIndexers.value.map((i) => [i.id, i.name]))
     emit('selectedIndexersUpdated', indexerNames)
     getUserStats(form.value)
@@ -125,7 +143,9 @@ const setDefaultForm = () => {
   } else {
     localStorage.setItem('defaultSelectedValues', JSON.stringify(selectedValues.value))
     localStorage.setItem('defaultSelectedIndexerIds', JSON.stringify(selectedIndexers.value.map((i) => i.id)))
-    showToast('', 'Indexers and displayed values set as default', 'success', 3000)
+    localStorage.setItem('defaultSelectedPreset', JSON.stringify(selectedPreset.value))
+    localStorage.setItem('defaultSelectedInterval', JSON.stringify(selectedInterval.value))
+    showToast('', 'Default settings saved', 'success', 3000)
   }
 }
 onMounted(async () => {
@@ -148,6 +168,14 @@ onMounted(async () => {
   } else {
     selectedIndexers.value = [selectableIndexers.value[0]]
   }
+  const defaultSelectedPreset = localStorage.getItem('defaultSelectedPreset')
+  if (defaultSelectedPreset) {
+    selectedPreset.value = JSON.parse(defaultSelectedPreset)
+  }
+  const defaultSelectedInterval = localStorage.getItem('defaultSelectedInterval')
+  if (defaultSelectedInterval) {
+    selectedInterval.value = JSON.parse(defaultSelectedInterval)
+  }
   onPresetChange(selectedPreset.value)
 })
 </script>
@@ -159,5 +187,10 @@ onMounted(async () => {
   > * {
     margin: 5px;
   }
+}
+.label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0.7;
 }
 </style>
