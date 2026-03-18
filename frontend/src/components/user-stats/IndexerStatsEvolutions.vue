@@ -27,18 +27,20 @@ const roundTs = (t: number) => Math.round(t / FIVE_MIN) * FIVE_MIN
 function chartOptions(value: keyof UserProfileScrapedVec): Options {
   const isGib = GIB_KEYS.includes(value)
 
-  const series: Options['series'] = props.indexerStats.map((indexer) => {
-    const raw = indexer.profile[value] as (number | null)[]
-    const data: [number, number][] = indexer.scraped_at.map((d, i) => [
-      roundTs(new Date(d).getTime()),
-      isGib ? (raw[i] ?? 0) / 1024 / 1024 / 1024 : (raw[i] as number),
-    ])
-    return {
-      type: 'line' as const,
-      name: props.indexerNames.get(indexer.indexer_id) ?? `Indexer ${indexer.indexer_id}`,
-      data,
-    }
-  })
+  const series: Options['series'] = props.indexerStats
+    .filter((indexer) => indexer.profile[value]?.length)
+    .map((indexer) => {
+      const raw = indexer.profile[value] as (number | null)[]
+      const data: [number, number][] = indexer.scraped_at.map((d, i) => [
+        roundTs(new Date(d).getTime()),
+        isGib ? (raw[i] ?? 0) / 1024 / 1024 / 1024 : (raw[i] as number),
+      ])
+      return {
+        type: 'line' as const,
+        name: props.indexerNames.get(indexer.indexer_id) ?? `Indexer ${indexer.indexer_id}`,
+        data,
+      }
+    })
 
   return {
     chart: { type: 'line', backgroundColor: 'transparent', height: 300 },

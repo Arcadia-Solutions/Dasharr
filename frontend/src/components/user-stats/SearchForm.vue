@@ -123,13 +123,18 @@ const fetchUserStats = async () => {
       .then((data) => {
         emit('gotResults', data)
         if (data.length > 0) {
-          const profile = data[0].profile
-          displayableValues.value = (Object.keys(profile) as (keyof UserProfileScrapedVec)[]).filter(
-            // @ts-expect-error TODO: fix error .at() doesn't exist
-            (key) => profile[key] && profile[key].length > 0 && profile[key].at(-1) !== null,
-          )
-          displayableValues.value.splice(displayableValues.value.indexOf('avatar'), 1)
-          displayableValues.value.splice(displayableValues.value.indexOf('class'), 1)
+          const allKeys = new Set<keyof UserProfileScrapedVec>()
+          for (const indexer of data) {
+            for (const key of Object.keys(indexer.profile) as (keyof UserProfileScrapedVec)[]) {
+              // @ts-expect-error TODO: fix error .at() doesn't exist
+              if (indexer.profile[key]?.length > 0 && indexer.profile[key].at(-1) !== null) {
+                allKeys.add(key)
+              }
+            }
+          }
+          allKeys.delete('avatar')
+          allKeys.delete('class')
+          displayableValues.value = [...allKeys]
           selectedValues.value = selectedValues.value.filter((val) => displayableValues.value.includes(val))
         }
         emit('selectedValuesUpdated', selectedValues.value)

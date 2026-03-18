@@ -6,7 +6,7 @@
         {{ indexerNames.get(indexer.indexer_id) ?? `Indexer ${indexer.indexer_id}` }}
       </div>
       <div class="items">
-        <ContentContainer v-for="name in selectedValues" :key="name" class="item">
+        <ContentContainer v-for="name in selectedValues.filter((v) => indexer.profile[v]?.length)" :key="name" class="item">
           <span class="value">{{ postProcessStat(name, indexer) }}</span>
           <span class="name">{{ name }}</span>
         </ContentContainer>
