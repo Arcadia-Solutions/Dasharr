@@ -7,9 +7,18 @@ import PrimeVue from 'primevue/config'
 import Aura from '@primeuix/themes/aura'
 import ToastService from 'primevue/toastservice'
 import Tooltip from 'primevue/tooltip'
+import Highcharts from 'highcharts'
+import HighchartsVue from 'highcharts-vue'
+
+Highcharts.setOptions({
+  lang: {
+    locale: 'en',
+  },
+})
 
 const app = createApp(App)
 
+app.use(HighchartsVue)
 app.use(PrimeVue, {
   theme: {
     preset: Aura,
