@@ -3,7 +3,7 @@ import { showToast } from '@/main'
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || window.location.origin + '/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || window.location.origin,
   timeout: 120000,
   headers: {
     'Content-Type': 'application/json',

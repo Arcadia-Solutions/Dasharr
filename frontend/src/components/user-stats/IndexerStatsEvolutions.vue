@@ -10,7 +10,7 @@
 </template>
 <script lang="ts" setup>
 import type { Options } from 'highcharts'
-import type { UserProfileVec, UserProfileScrapedVec } from '@/services/api/userStatsService'
+import type { UserProfileVec, UserProfileScrapedVec } from '@/services/api-schema'
 import ContentContainer from '../ContentContainer.vue'
 
 const GIB_KEYS: (keyof UserProfileScrapedVec)[] = ['uploaded', 'downloaded', 'seed_size', 'uploaded_real', 'downloaded_real']

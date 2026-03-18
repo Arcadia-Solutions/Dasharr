@@ -1,0 +1,65 @@
+/* tslint:disable */
+/* eslint-disable */
+{{>licenseInfo}}
+
+import type { RawAxiosRequestConfig } from 'axios';
+import globalAxios from '../api/api';
+
+{{#models}}
+{{#model}}{{#isEnum}}{{>modelEnum}}{{/isEnum}}{{#oneOf}}{{#-first}}{{>modelOneOf}}{{/-first}}{{/oneOf}}{{^isEnum}}{{^oneOf}}{{>modelGeneric}}{{/oneOf}}{{/isEnum}}{{/model}}
+{{/models}}
+{{#apiInfo}}{{#apis}}
+{{#operations}}
+{{#operation}}
+{{#allParams}}{{#-first}}{{^-last}}
+export interface {{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}Request {
+{{#allParams}}
+    '{{baseName}}'{{^required}}?{{/required}}: {{{dataType}}}{{^required}} | null{{/required}};
+{{/allParams}}
+}
+{{/-last}}{{/-first}}{{/allParams}}
+{{#allParams}}{{#-first}}{{#-last}}
+export const {{operationId}} = async ({{paramName}}{{^required}}?{{/required}}: {{{dataType}}}{{^required}} | null{{/required}}, options?: RawAxiosRequestConfig): Promise<{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}void{{/returnType}}> => {
+    const response = await globalAxios.request<{{{returnType}}}{{^returnType}}void{{/returnType}}>({
+        url: {{#isPathParam}}`{{path}}`.replace('{' + '{{baseName}}' + '}', String({{paramName}})){{/isPathParam}}{{^isPathParam}}'{{path}}'{{/isPathParam}},
+        method: '{{httpMethod}}',
+{{#bodyParam}}
+        data: {{paramName}},
+{{/bodyParam}}
+{{#queryParams}}
+        params: { '{{baseName}}': {{paramName}} },
+{{/queryParams}}
+        ...options
+    });
+    return response.data;
+};
+{{/-last}}{{/-first}}{{/allParams}}
+{{#allParams}}{{#-first}}{{^-last}}
+export const {{operationId}} = async (request: {{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}Request, options?: RawAxiosRequestConfig): Promise<{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}void{{/returnType}}> => {
+    const response = await globalAxios.request<{{{returnType}}}{{^returnType}}void{{/returnType}}>({
+        url: `{{path}}`{{#pathParams}}.replace('{' + '{{baseName}}' + '}', String(request['{{baseName}}'])){{/pathParams}},
+        method: '{{httpMethod}}',
+{{#bodyParam}}
+        data: request['{{baseName}}'],
+{{/bodyParam}}
+{{#hasQueryParams}}
+        params: { {{#queryParams}}'{{baseName}}': request['{{baseName}}']{{^-last}}, {{/-last}}{{/queryParams}} },
+{{/hasQueryParams}}
+        ...options
+    });
+    return response.data;
+};
+{{/-last}}{{/-first}}{{/allParams}}
+{{^allParams}}
+export const {{operationId}} = async (options?: RawAxiosRequestConfig): Promise<{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}void{{/returnType}}> => {
+    const response = await globalAxios.request<{{{returnType}}}{{^returnType}}void{{/returnType}}>({
+        url: '{{path}}',
+        method: '{{httpMethod}}',
+        ...options
+    });
+    return response.data;
+};
+{{/allParams}}
+{{/operation}}
+{{/operations}}
+{{/apis}}{{/apiInfo}}

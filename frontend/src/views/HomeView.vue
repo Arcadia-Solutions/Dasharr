@@ -9,7 +9,7 @@
 import IndexerStatsEvolutions from '@/components/user-stats/IndexerStatsEvolutions.vue'
 import IndexerStatsIncreases from '@/components/user-stats/IndexerStatsIncreases.vue'
 import SearchForm from '@/components/user-stats/SearchForm.vue'
-import type { UserProfileScrapedVec, UserProfileVec } from '@/services/api/userStatsService'
+import type { UserProfileScrapedVec, UserProfileVec } from '@/services/api-schema'
 import { ref } from 'vue'
 
 const userStats = ref<UserProfileVec>()

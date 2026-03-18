@@ -10,7 +10,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import type { UserProfileScrapedVec, UserProfileVec } from '@/services/api/userStatsService'
+import type { UserProfileScrapedVec, UserProfileVec } from '@/services/api-schema'
 import ContentContainer from '../ContentContainer.vue'
 import { bytesToReadable } from '@/services/helpers'
 

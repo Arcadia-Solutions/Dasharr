@@ -42,11 +42,10 @@
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import { ToggleSwitch, Button, Dialog } from 'primevue'
-import { toggleIndexer, getIndexersEnriched, type IndexerEnriched } from '@/services/api/indexerService'
+import { toggleIndexer, getIndexersEnriched, scrapeUserStats, type IndexerEnriched } from '@/services/api-schema'
 import { onMounted, ref } from 'vue'
 import IndexerSettings from './IndexerSettings.vue'
 import { showToast } from '@/main'
-import { scrapeUserStats } from '@/services/api/userStatsService'
 import { timeAgo } from '@/services/helpers'
 
 const scrapingUserStats = ref(false)

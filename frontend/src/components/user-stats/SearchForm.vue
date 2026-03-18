@@ -27,11 +27,17 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { getUserStats, type GetUserStatsQuery, type UserProfileScrapedVec, type UserProfileVec } from '@/services/api/userStatsService'
+import {
+  getUserStats,
+  getIndexersEnriched,
+  type GetUserStatsRequest,
+  type UserProfileScrapedVec,
+  type UserProfileVec,
+  type IndexerEnriched,
+} from '@/services/api-schema'
 import { DatePicker, Select, MultiSelect, Button } from 'primevue'
 import { onMounted, ref } from 'vue'
 import { startOfMonth, endOfMonth } from 'date-fns'
-import { getIndexersEnriched, type IndexerEnriched } from '@/services/api/indexerService'
 import { showToast } from '@/main'
 
 const emit = defineEmits<{
@@ -45,7 +51,7 @@ const loading = ref(false)
 const selectableIndexers = ref<IndexerEnriched[]>([])
 const selectedIndexer = ref<IndexerEnriched>()
 const dateRange = ref<Date[]>([])
-const form = ref<GetUserStatsQuery>({
+const form = ref<GetUserStatsRequest>({
   date_from: '',
   date_to: '',
   indexer_id: 0,
