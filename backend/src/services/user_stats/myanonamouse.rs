@@ -28,7 +28,14 @@ impl<'de> Visitor<'de> for RatioVisitor {
     type Value = f32;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("an f32 or the character '∞'")
+        formatter.write_str("an f64, u64 or the character '∞'")
+    }
+
+    fn visit_u64<E>(self, v: u64) -> std::result::Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        Ok(v as f32)
     }
 
     fn visit_f64<E>(self, v: f64) -> std::result::Result<Self::Value, E>
