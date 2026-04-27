@@ -6,8 +6,6 @@ services:
     shm_size: 128mb
     volumes:
       - db_data:/var/lib/postgresql/
-    ports:
-      - 5432:5432
     env_file:
       - .env
     healthcheck:
