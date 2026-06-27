@@ -15,7 +15,7 @@ pub async fn scrape_indexers(pool: &Arc<ConnectionPool>) -> crate::error::Result
 
     type ScrapeResult = Result<UserProfile, ScraperError>;
 
-    let results = futures::stream::iter(indexers.into_iter())
+    let results = futures::stream::iter(indexers)
         .filter(|indexer| futures::future::ready(indexer.enabled))
         .map(|indexer| async move {
             log::info!("scraping indexer: {}", indexer.name);
