@@ -36,7 +36,10 @@ impl Scraper for HomieHelpDeskScraper {
             .await
             .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
 
-        let body = res.text().await.unwrap();
+        let body = res
+            .text()
+            .await
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
         let response = serde_json::from_str::<UnitedResponse>(&body).map_err(|e| {
             Error::CouldNotScrapeIndexer(format!("Your api key is probably invalid. {}", e))
         })?;

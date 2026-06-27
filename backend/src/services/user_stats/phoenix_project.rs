@@ -202,7 +202,10 @@ impl Scraper for PhoenixProjectScraper {
             .send()
             .await
             .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
-        let body = res.text().await.unwrap();
+        let body = res
+            .text()
+            .await
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
 
         let response = serde_json::from_str::<PhoenixProjectProfileResponse>(&body)
             .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
@@ -220,7 +223,10 @@ impl Scraper for PhoenixProjectScraper {
             .send()
             .await
             .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
-        let body = res.text().await.unwrap();
+        let body = res
+            .text()
+            .await
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
         let response = serde_json::from_str::<PhoenixProjectIndexResponse>(&body)
             .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
         if response.status != "success" {

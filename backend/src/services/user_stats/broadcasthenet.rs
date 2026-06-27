@@ -100,7 +100,10 @@ impl Scraper for BroadcasthenetScraper {
             .await
             .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
 
-        let body = res.text().await.unwrap();
+        let body = res
+            .text()
+            .await
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
         let response = serde_json::from_str::<BroadcasthenetResponse>(&body)
             .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
         if response.result.is_none() {

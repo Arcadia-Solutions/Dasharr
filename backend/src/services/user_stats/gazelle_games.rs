@@ -151,7 +151,10 @@ impl Scraper for GazelleGamesScraper {
             .await
             .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
 
-        let body = res.text().await.unwrap();
+        let body = res
+            .text()
+            .await
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
         let response = serde_json::from_str::<GazelleGamesResponse>(&body)
             .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
 

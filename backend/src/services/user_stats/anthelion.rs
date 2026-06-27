@@ -83,7 +83,10 @@ impl Scraper for AnthelionScraper {
             .await
             .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
 
-        let body = res.text().await.unwrap();
+        let body = res
+            .text()
+            .await
+            .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
         let response = serde_json::from_str::<AnthelionResponse>(&body)
             .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
         if response.response.is_none() {
