@@ -23,7 +23,7 @@ impl Scraper for LSTScraper {
                 "https://lst.gg/api/user?api_token={}",
                 indexer
                     .auth_data
-                    .get("api_key")
+                    .get("api_token")
                     .ok_or("LST API key not found")
                     .map_err(|e| Error::CouldNotScrapeIndexer(e.into()))?
                     .get("value")
