@@ -1,5 +1,5 @@
 # build backend
-FROM rust:1.89 AS base
+FROM rust:1.94 AS base
 RUN cargo install --locked cargo-chef
 
 FROM base AS planner
