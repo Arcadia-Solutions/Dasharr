@@ -7,21 +7,15 @@ use crate::{
         indexer::{Indexer, Scraper},
         user_stats::UserProfileScraped,
     },
-    services::helpers::bytes_from_size_string,
 };
-
-#[derive(Debug, Deserialize)]
-struct AitherResponse {
-    data: AitherUserData,
-}
 
 #[derive(Debug, Deserialize)]
 #[allow(dead_code)]
 struct AitherUserData {
     username: String,
     group: String,
-    uploaded: String,
-    downloaded: String,
+    uploaded: u64,
+    downloaded: u64,
     ratio: String,
     buffer: i64,
     seeding: i32,
@@ -72,14 +66,13 @@ impl Scraper for AitherScraper {
             .text()
             .await
             .map_err(|e| Error::CouldNotScrapeIndexer(e.to_string()))?;
-        let response: AitherResponse = serde_json::from_str(&body).map_err(|e| {
+        let data: AitherUserData = serde_json::from_str(&body).map_err(|e| {
             Error::CouldNotScrapeIndexer(format!("Your api key is probably invalid. {}", e))
         })?;
 
-        let data = response.data;
         Ok(UserProfileScraped {
-            uploaded: bytes_from_size_string(&data.uploaded),
-            downloaded: bytes_from_size_string(&data.downloaded),
+            uploaded: data.uploaded as i64,
+            downloaded: data.downloaded as i64,
             ratio: data.ratio.parse::<f32>().unwrap_or(0.0),
             class: data.group,
             seeding: Some(data.seeding),
