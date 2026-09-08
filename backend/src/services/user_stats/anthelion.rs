@@ -1,5 +1,6 @@
 use async_trait::async_trait;
 use serde::Deserialize;
+use serde_json::Value;
 
 use crate::{
     error::{Error, Result},
@@ -21,28 +22,56 @@ struct AnthelionResponse {
 #[derive(Debug, Deserialize)]
 struct UserProfileScrapedContent {
     #[serde(rename = "Uploaded")]
-    uploaded: i64,
+    uploaded: Value,
     #[serde(rename = "Downloaded")]
-    downloaded: i64,
+    downloaded: Value,
     #[serde(rename = "Class")]
     class: String,
     #[serde(rename = "Snatched")]
-    snatched: i32,
+    snatched: Value,
     #[serde(rename = "ForumPosts")]
-    forum_posts: i32,
+    forum_posts: Value,
     #[serde(rename = "SeedCount")]
-    seeding: i32,
+    seeding: Value,
+    #[serde(rename = "Orbs")]
+    bonus_points: Value,
+    #[serde(rename = "Uploads")]
+    uploaded_torrents: Value,
+    #[serde(rename = "SeedSize")]
+    seed_size: Value,
+    #[serde(rename = "Invites")]
+    invited: Value,
+}
+
+fn parse_i64(value: Value) -> i64 {
+    match value {
+        Value::String(s) => s.parse().unwrap_or(0),
+        Value::Number(n) => n.as_i64().unwrap_or(0),
+        _ => 0,
+    }
+}
+
+fn parse_i32(value: Value) -> Option<i32> {
+    match value {
+        Value::String(s) => s.parse().ok(),
+        Value::Number(n) => n.as_i64().and_then(|v| i32::try_from(v).ok()),
+        _ => None,
+    }
 }
 
 impl From<UserProfileScrapedContent> for UserProfileScraped {
     fn from(wrapper: UserProfileScrapedContent) -> Self {
         UserProfileScraped {
-            uploaded: wrapper.uploaded,
-            downloaded: wrapper.downloaded,
-            seeding: Some(wrapper.seeding),
+            uploaded: parse_i64(wrapper.uploaded),
+            downloaded: parse_i64(wrapper.downloaded),
+            seeding: parse_i32(wrapper.seeding),
             class: wrapper.class,
-            snatched: Some(wrapper.snatched),
-            posts: Some(wrapper.forum_posts),
+            snatched: parse_i32(wrapper.snatched),
+            posts: parse_i32(wrapper.forum_posts),
+            bonus_points: parse_i32(wrapper.bonus_points).map(i64::from),
+            uploaded_torrents: parse_i32(wrapper.uploaded_torrents),
+            seed_size: parse_i32(wrapper.seed_size).map(i64::from),
+            invited: parse_i32(wrapper.invited),
             ..Default::default()
         }
     }
