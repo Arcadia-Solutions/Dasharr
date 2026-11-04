@@ -11,7 +11,7 @@ use crate::{
         aither::AitherScraper, anime_bytes::AnimeBytesScraper, anthelion::AnthelionScraper,
         blutopia::BlutopiaScraper, broadcasthenet::BroadcasthenetScraper,
         darkpeers::DarkPeersScraper, fear_no_peer::FearNoPeerScraper,
-        gazelle_games::GazelleGamesScraper, homiehelpdesk::HomieHelpDeskScraper,
+        gazelle_games::GazelleGamesScraper, hdf::HDFScraper, homiehelpdesk::HomieHelpDeskScraper,
         ita_torrents::ItaTorrentsScraper, lst::LSTScraper, myanonamouse::MyAnonamouseScraper,
         oldtoons::OldToonsScraper, only_encodes::OnlyEncodesScraper, orpheus::OrpheusScraper,
         phoenix_project::PhoenixProjectScraper, racing4everyone::Racing4EveryoneScraper,
@@ -161,6 +161,10 @@ impl Indexer {
             "Racing4Everyone" => {
                 static RACING_4_EVERYONE_SCRAPER: Racing4EveryoneScraper = Racing4EveryoneScraper;
                 &RACING_4_EVERYONE_SCRAPER
+            }
+            "HDF" => {
+                static HDF_SCRAPER: HDFScraper = HDFScraper;
+                &HDF_SCRAPER
             }
             _ => {
                 return Err(Error::CouldNotScrapeIndexer(
