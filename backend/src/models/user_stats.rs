@@ -1,3 +1,4 @@
+#![allow(clippy::redundant_field_names)] // soa_derive-generated code
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use soa_derive::StructOfArray;
