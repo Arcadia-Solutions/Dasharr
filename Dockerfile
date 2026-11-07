@@ -1,6 +1,5 @@
 # build backend
-FROM rust:1.94 AS base
-RUN cargo install --locked cargo-chef
+FROM lukemathwalker/cargo-chef:latest-rust-1.94 AS base
 
 FROM base AS planner
 
@@ -17,11 +16,6 @@ FROM base AS builder_backend
 WORKDIR /app
 
 COPY --from=planner /app/recipe.json recipe.json
-# Necessary for `init_db`
-COPY --from=planner /app/backend/migrations/ migrations/
-
-# Necessary for `init_db`
-RUN cargo install sqlx-cli --no-default-features --features native-tls,postgres
 
 # Caches the target directory for intermediate build artifacts.
 # `cargo chef cook` downloads, builds, and caches all of the dependencies for future builds.
@@ -35,7 +29,8 @@ RUN --mount=type=cache,target=target,sharing=locked \
     SQLX_OFFLINE=true cargo build --release && mv /app/target/release/dasharr /usr/local/bin/dasharr_backend;
 
 # build frontend
-FROM node:lts-slim AS builder_frontend
+# frontend output is platform-independent: build once, natively
+FROM --platform=$BUILDPLATFORM node:lts-slim AS builder_frontend
 
 WORKDIR /home/node/app
 
