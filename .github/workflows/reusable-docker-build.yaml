@@ -11,7 +11,7 @@ on:
   # - Builds on push to default_branch will have a unique tag of `stable-YYYYMMDD-SHA`
   # - Builds on push to default_branch will have a reusable tag of `latest` (useful for easy human testing, not servers)
   # - Builds on a tag push with semver will also have a reusable tag of `latest` and also a semver tag
-  # - Defaults to only linux/amd64 platform builds, but can build for others in parallel
+  # - Builds linux/amd64 and linux/arm64 in parallel on native runners (no QEMU), then merges them into one manifest
 
   workflow_call:
     # allow reuse of this workflow in other repos
@@ -44,11 +44,6 @@ on:
         # NOTE: if you are seeing `latest` retagged when you don't expect it, set this latest=false
         default: |
           latest=auto
-      ghcr-enable:
-        description: Log into GHCR
-        required: false
-        default: true
-        type: boolean
       image-names:
         description: A list of the account/repo names for docker build to push to
         required: false
@@ -57,12 +52,6 @@ on:
         # and docker-build-push step will push to all of them
         default: |
           ghcr.io/${{ github.repository }}
-      platforms:
-        description: Platforms to build for
-        required: false
-        type: string
-        # common ones: linux/amd64,linux/arm64,linux/arm/v7
-        default: linux/amd64
       push:
         description: Push image to registry(s)
         required: false
@@ -103,7 +92,7 @@ on:
     outputs:
       image-tag:
         description: "single-use image tag for GHA runs"
-        value: ${{ jobs.build-image.outputs.image-tag }}
+        value: ${{ jobs.merge.outputs.image-tag }}
 
 # set permissions here for what's required to run this Reusable Workflow
 # However, permisions are set in the GITHUB_TOKEN by the **calling** workflow
@@ -117,8 +106,79 @@ permissions:
 
 jobs:
   build-image:
-    name: Build+Push
+    name: Build (${{ matrix.platform }})
+    runs-on: ${{ matrix.runner }}
 
+    strategy:
+      fail-fast: true
+      matrix:
+        # native runners: emulating arm64 with QEMU makes the rust build ~10x slower
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+
+    steps:
+        # ghcr refs must be lowercase
+      - name: Prepare
+        id: prep
+        run: |
+          echo "image=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+          platform=${{ matrix.platform }}
+          echo "pair=${platform//\//-}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.8.0
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker meta
+        id: docker_meta
+        uses: docker/metadata-action@v5.6.1
+        with:
+          images: ${{ steps.prep.outputs.image }}
+
+        # push the single-platform image by digest only; the merge job tags the multi-platform manifest
+      - name: Docker Build and Push
+        id: build_image
+        uses: docker/build-push-action@v6.12.0
+        with:
+          platforms: ${{ matrix.platform }}
+          context: ${{ inputs.context }}
+          file: ${{ inputs.file }}
+          target: ${{ inputs.target }}
+          labels: ${{ steps.docker_meta.outputs.labels }}
+          outputs: type=image,name=${{ steps.prep.outputs.image }},push-by-digest=true,name-canonical=true,push=${{ inputs.push }}
+          # registry cache, one per platform so they don't overwrite each other
+          cache-from: type=registry,ref=${{ steps.prep.outputs.image }}:buildcache-${{ steps.prep.outputs.pair }}
+          cache-to: type=registry,ref=${{ steps.prep.outputs.image }}:buildcache-${{ steps.prep.outputs.pair }},mode=max
+          provenance: true
+          sbom: true
+
+      - name: Export digest
+        run: |
+          mkdir -p "${{ runner.temp }}/digests"
+          digest="${{ steps.build_image.outputs.digest }}"
+          touch "${{ runner.temp }}/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ steps.prep.outputs.pair }}
+          path: ${{ runner.temp }}/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  merge:
+    name: Merge+Tag
+    needs: build-image
+    if: inputs.push
     runs-on: ubuntu-latest
 
     outputs:
@@ -126,14 +186,18 @@ jobs:
       image-tag: ${{ steps.image-tag.outputs.image-tag }}
 
     steps:
-      # we need qemu and buildx so we can build multiple platforms later
-      - name: Set up QEMU
-        id: qemu
-        uses: docker/setup-qemu-action@v3.3.0
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          path: ${{ runner.temp }}/digests
+          pattern: digests-*
+          merge-multiple: true
 
-        # BuildKit (used with `docker buildx`) is the best way to build images
+      - name: Prepare
+        id: prep
+        run: echo "image=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+
       - name: Set up Docker Buildx
-        id: buildx
         uses: docker/setup-buildx-action@v3.8.0
 
       - name: Login to DockerHub
@@ -144,17 +208,11 @@ jobs:
           password: ${{ secrets.dockerhub-token }}
 
       - name: Login to GHCR
-        if: inputs.ghcr-enable
         uses: docker/login-action@v3.3.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-        # ghcr refs must be lowercase
-      - name: Cache ref
-        id: cache
-        run: echo "ref=ghcr.io/${GITHUB_REPOSITORY,,}:buildcache" >> "$GITHUB_OUTPUT"
 
       - name: Docker meta
         id: docker_meta
@@ -165,30 +223,14 @@ jobs:
           flavor: ${{ inputs.flavor-rules }}
           tags: ${{ inputs.tag-rules }}
 
-        # this will build the images, once per platform,
-        # then push to one or more registries (based on image list above in docker_meta)
-        # NOTE: this will not push if a PR is from a fork, where secrets are not available
-        # https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
-      - name: Docker Build and Push
-        id: build_image
-        uses: docker/build-push-action@v6.12.0
-        with:
-          platforms: ${{ inputs.platforms }}
-          context: ${{ inputs.context }}
-          file: ${{ inputs.file }}
-          target: ${{ inputs.target }}
-          builder: ${{ steps.buildx.outputs.name }}
-          # registry cache: no 10GB GHA cache limit, so rust layers for both platforms survive
-          cache-from: type=registry,ref=${{ steps.cache.outputs.ref }}
-          cache-to: type=registry,ref=${{ steps.cache.outputs.ref }},mode=max
-          push: ${{ inputs.push }}
-          tags: ${{ steps.docker_meta.outputs.tags }}
-          labels: ${{ steps.docker_meta.outputs.labels }}
-          # add attestations for provenance and sbom (bleeding edge BuildKit features)
-          # NOTE: for now, this reults in `unknown/unknown` images in all registries but Hub
-          # https://docs.docker.com/build/attestations/attestation-storage/
-          provenance: true
-          sbom: true
+        # combine the per-platform digests into one manifest list, tagged for every image name
+      - name: Create manifest list and push
+        working-directory: ${{ runner.temp }}/digests
+        run: |
+          # shellcheck disable=SC2046
+          docker buildx imagetools create \
+            $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf '${{ steps.prep.outputs.image }}@sha256:%s ' *)
 
         # If PR, put image tags in the PR comments
         # from https://github.com/marketplace/actions/create-or-update-comment
@@ -201,7 +243,6 @@ jobs:
           comment-author: "github-actions[bot]"
           body-includes: Docker image tag(s) pushed
 
-        # If PR, put image tags in the PR comments
       - name: Create or update comment for image tags
         uses: peter-evans/create-or-update-comment@v4.0.0
         if: github.event_name == 'pull_request' && inputs.comment-enable
@@ -220,11 +261,7 @@ jobs:
             ```
           edit-mode: replace
 
-        # for dependent jobs, we need to output the unique tag for this GHA run
-        # based on the docker_meta tag priority rules, the highest priority tag
-        # will be sent to this output
-        # this step output is sent to job output, which is sent to workflow output
-        # use this tag in another job with needs.<job-name>.outputs.image-tag
+        # for dependent jobs, output the highest priority tag from the docker_meta rules
       - name: Find the primary image tag we just pushed, and output it
         id: image-tag
         run: |

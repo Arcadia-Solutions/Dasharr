@@ -40,8 +40,6 @@ jobs:
       # Here are just a few of the common defaults
 
       # dockerhub-enable: false
-      ghcr-enable: true
-
       image-names: |
         ghcr.io/${{ github.repository }}
 
@@ -56,6 +54,6 @@ jobs:
 
       # target:
 
-      platforms: linux/amd64,linux/arm64
+      # platforms: built natively for linux/amd64 + linux/arm64 (see reusable workflow matrix)
 
       # comment-enable: true
